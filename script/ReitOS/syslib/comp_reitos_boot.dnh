@@ -3,15 +3,18 @@ task __COMP_REITOS_BOOT_Boot() {
     // Create Boot Screen Background
     let objboot = ObjPrim_Create(OBJ_SPRITE_2D);
     Obj_SetRenderPriorityI(objboot, 1);
-    ObjPrim_SetTexture(objboot, GetCurrentScriptDirectory() ~ "./sysimg/dot.jpg");
+    ObjPrim_SetTexture(objboot, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
     ObjSprite2D_SetSourceRect(objboot, 0, 0, 1, 1);
     ObjSprite2D_SetDestRect(objboot, 0, 0, 800, 600);
     ObjRender_SetColor(objboot, 96, 144, 224);
     objects = objects ~ [objboot];
 
+    // Run Animation
+    __COMP_REITOS_BOOT_Animation();
+
     // Create Boot Screen Text
     let objText = ObjText_Create();
-    Obj_SetRenderPriorityI(objText, 2);
+    Obj_SetRenderPriorityI(objText, 3);
     ObjText_SetText(objText, "Welcome to ReitOS");
     ObjText_SetFontSize(objText, 32);
     ObjText_SetFontBold(objText, true);
@@ -28,7 +31,7 @@ task __COMP_REITOS_BOOT_Boot() {
 
     // Create Boot Screen Animation
     let objline = ObjPrim_Create(OBJ_SPRITE_2D);
-    Obj_SetRenderPriorityI(objline, 2);
+    Obj_SetRenderPriorityI(objline, 3);
     ObjPrim_SetTexture(objline, GetCurrentScriptDirectory() ~ "./sysimg/dot.jpg");
     ObjSprite2D_SetSourceRect(objline, 0, 0, 1, 1);
     ObjRender_SetColor(objline, 32, 80, 160);
@@ -36,7 +39,7 @@ task __COMP_REITOS_BOOT_Boot() {
     objects = objects ~ [objline];
 
     let objline2 = ObjPrim_Create(OBJ_SPRITE_2D);
-    Obj_SetRenderPriorityI(objline2, 2);
+    Obj_SetRenderPriorityI(objline2, 3);
     ObjPrim_SetTexture(objline2, GetCurrentScriptDirectory() ~ "./sysimg/dot.jpg");
     ObjSprite2D_SetSourceRect(objline2, 0, 0, 1, 1);
     ObjRender_SetPosition(objline2, 400, 256, 1);
@@ -49,7 +52,7 @@ task __COMP_REITOS_BOOT_Boot() {
 
     // Information
     let objText2 = ObjText_Create();
-    Obj_SetRenderPriorityI(objText2, 2);
+    Obj_SetRenderPriorityI(objText2, 3);
     ObjText_SetText(objText2, "Setting up your Desktop...");
     ObjText_SetFontSize(objText2, 16);
     ObjText_SetFontBold(objText2, true);
@@ -77,4 +80,35 @@ task __COMP_REITOS_BOOT_Boot() {
 
     // Initialize Desktop
     SetAreaCommonData("reitos_core", "comp_reitos_boot_bootstatus", true);
+}
+
+task __COMP_REITOS_BOOT_Animation {
+    let angle = 0;
+    let count = 0;
+    while (!GetAreaCommonData("reitos_core", "comp_reitos_boot_bootstatus", false)) {
+        loop(12) {
+            __COMP_REITOS_BOOT_Bullet(angle, 5 + 3*cos(count * 8));
+            angle += 360/12;
+        }
+        count += 1;
+        angle += 13 * sin(count*3);
+        loop(4) {yield;}
+    }
+}
+
+task __COMP_REITOS_BOOT_Bullet(angle, speed) {
+    let objx = 400;
+    let objy = 300;
+    let obj = ObjPrim_Create(OBJ_SPRITE_2D);
+    Obj_SetRenderPriorityI(obj, 2);
+    ObjPrim_SetTexture(obj, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
+    ObjSprite2D_SetSourceRect(obj, 0, 0, 4, 4);
+    ObjSprite2D_SetDestCenter(obj);
+    while (objx > -8 && objx < 808 && objy > -8 && objy < 608 && !GetAreaCommonData("reitos_core", "comp_reitos_boot_bootstatus", false)) {
+        objx += speed * cos(angle);
+        objy += speed * sin(angle);
+        ObjRender_SetPosition(obj, objx, objy, 1);
+        yield;
+    }
+    Obj_Delete(obj);
 }
