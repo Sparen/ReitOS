@@ -30,6 +30,19 @@ Application windows use render priority 10.
 
 ### Applications
 
+All Applications are standalone scripts that are allowed to `#include` as many of the libraries in `syslib/lib-*.dnh` as they want to. However, they cannot interact with each other.
+
+Each Application must have a `PROPERTIES.TXT` file with the following:
+```
+APPLICATION_NAME\&lt;Insert your application's name here&gt;
+VERSION_NUMBER\&lt;Insert your application's version number here&gt;
+AUTHOR\&lt;Insert your name here&gt;
+```
+
+For example:
+
+(Example will be provided once this step in development is reached)
+
 # TODO
 
 * Initial Desktop Window
