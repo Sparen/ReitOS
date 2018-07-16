@@ -1,0 +1,80 @@
+task __COMP_REITOS_BOOT_Boot() {
+    let objects = []; // Store objects for eventual deletion
+    // Create Boot Screen Background
+    let objboot = ObjPrim_Create(OBJ_SPRITE_2D);
+    Obj_SetRenderPriorityI(objboot, 1);
+    ObjPrim_SetTexture(objboot, GetCurrentScriptDirectory() ~ "./sysimg/dot.jpg");
+    ObjSprite2D_SetSourceRect(objboot, 0, 0, 1, 1);
+    ObjSprite2D_SetDestRect(objboot, 0, 0, 800, 600);
+    ObjRender_SetColor(objboot, 96, 144, 224);
+    objects = objects ~ [objboot];
+
+    // Create Boot Screen Text
+    let objText = ObjText_Create();
+    Obj_SetRenderPriorityI(objText, 2);
+    ObjText_SetText(objText, "Welcome to ReitOS");
+    ObjText_SetFontSize(objText, 32);
+    ObjText_SetFontBold(objText, true);
+    ObjText_SetFontType(objText, "Helvetica");
+    ObjText_SetFontColorTop(objText, 255, 255, 255);
+    ObjText_SetFontColorBottom(objText, 255, 255, 255);
+    ObjText_SetFontBorderType(objText, BORDER_FULL);
+    ObjText_SetFontBorderWidth(objText, 2);
+    ObjText_SetFontBorderColor(objText, 48, 96, 176);
+    ObjText_SetHorizontalAlignment(objText, ALIGNMENT_CENTER);
+    ObjText_SetMaxWidth(objText, 320);
+    ObjRender_SetPosition(objText, 400 - 160, 216, 1);
+    objects = objects ~ [objText];
+
+    // Create Boot Screen Animation
+    let objline = ObjPrim_Create(OBJ_SPRITE_2D);
+    Obj_SetRenderPriorityI(objline, 2);
+    ObjPrim_SetTexture(objline, GetCurrentScriptDirectory() ~ "./sysimg/dot.jpg");
+    ObjSprite2D_SetSourceRect(objline, 0, 0, 1, 1);
+    ObjRender_SetColor(objline, 32, 80, 160);
+    ObjRender_SetPosition(objline, 400, 256, 1);
+    objects = objects ~ [objline];
+
+    let objline2 = ObjPrim_Create(OBJ_SPRITE_2D);
+    Obj_SetRenderPriorityI(objline2, 2);
+    ObjPrim_SetTexture(objline2, GetCurrentScriptDirectory() ~ "./sysimg/dot.jpg");
+    ObjSprite2D_SetSourceRect(objline2, 0, 0, 1, 1);
+    ObjRender_SetPosition(objline2, 400, 256, 1);
+    objects = objects ~ [objline2];
+    ascent(i in 0..120) {
+        ObjSprite2D_SetDestRect(objline, -i - 1, -2, i + 1, 2);
+        ObjSprite2D_SetDestRect(objline2, -i, -1, i, 1);
+        loop(1) {yield;}
+    }
+
+    // Information
+    let objText2 = ObjText_Create();
+    Obj_SetRenderPriorityI(objText2, 2);
+    ObjText_SetText(objText2, "Setting up your Desktop...");
+    ObjText_SetFontSize(objText2, 16);
+    ObjText_SetFontBold(objText2, true);
+    ObjText_SetFontType(objText2, "Helvetica");
+    ObjText_SetFontColorTop(objText2, 255, 255, 255);
+    ObjText_SetFontColorBottom(objText2, 255, 255, 255);
+    ObjText_SetFontBorderType(objText2, BORDER_FULL);
+    ObjText_SetFontBorderWidth(objText2, 2);
+    ObjText_SetFontBorderColor(objText2, 48, 96, 176);
+    ObjText_SetHorizontalAlignment(objText2, ALIGNMENT_CENTER);
+    ObjText_SetMaxWidth(objText2, 320);
+    ObjRender_SetPosition(objText2, 400 - 160, 304, 1);
+    objects = objects ~ [objText2];
+    ascent(i in 0..30) {
+        ObjRender_SetAlpha(objText2, i * 255/30);
+        yield;
+    }
+
+    loop(360) {yield;}
+
+    // Clean up Boot Sequence
+    ascent(i in 0..length(objects)) {
+        Obj_Delete(objects[i]);
+    }
+
+    // Initialize Desktop
+    SetAreaCommonData("reitos_core", "comp_reitos_boot_bootstatus", true);
+}

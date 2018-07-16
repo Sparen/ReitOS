@@ -1,0 +1,5 @@
+package.script.main = script/ReitOS/ReitOS_Package_Main.dnh
+window.title = ReitOS
+screen.width=800
+screen.height=600
+
