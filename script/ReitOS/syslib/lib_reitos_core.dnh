@@ -1,0 +1,52 @@
+/* ******************************************************************
+* ReitOS Core Library
+* For use with Touhou Danmakufu ph3
+* (C) Sparen of Iria 2018
+*
+* Code in this library is under the MIT License and may be 
+* redistributed/modified without express permission
+****************************************************************** */
+
+/* ******************************************************************
+* This library holds functions that allow for applications and other libraries to access the system
+****************************************************************** */
+
+/* ******************************************************************
+* Dependencies:
+* lib_reitos_window.dnh
+****************************************************************** */
+
+/* ******************************************************************
+* Public Methods:
+* Mouse_OnWindow()
+*
+* Fields:
+* x, y (refer to top left of header)
+* height, width (height does not include 32 pixel header)
+* type (window type; see constants below)
+* status (status of window; see constants below)
+* name (name of window)
+* components (objects that are positioned relative to the window)
+************************************************************************* */
+
+
+/* *************************************************************************
+* Mouse_OnWindow(objWindow) -- Determines if the mouse is present on the selected window.
+* Return: true if mouse is on the specified window; false otherwise.
+************************************************************************* */
+function Mouse_OnWindow(objWindow) {
+    // If window is closed, does not exist, or is minimized, return false
+    if (Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_CLOSED || Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_MINIMIZED) {
+        return false;
+    }
+    let mx = GetCommonData("reitos_mouse_x", 0);
+    let my = GetCommonData("reitos_mouse_y", 0);
+    // First check if the mouse is on the current window
+    if (mx < Obj_GetValueD(objWindow, "reitos_window_x", 0) || mx > Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 0) || my < Obj_GetValueD(objWindow, "reitos_window_y", 0) || my > Obj_GetValueD(objWindow, "reitos_window_y", 0) + 32) {
+        return false;
+    }
+    // Next go through the list of windows that are on Foreground or Background but are not the current window
+    // TODO
+
+    return true;
+}

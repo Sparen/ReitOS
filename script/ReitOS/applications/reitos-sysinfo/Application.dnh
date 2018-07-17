@@ -11,7 +11,8 @@
 ****************************************************************** */
 
 // Include libraries from syslib
-#include "./../syslib/lib_reitos_window.dnh"
+#include "./../../syslib/lib_reitos_core.dnh"
+#include "./../../syslib/lib_reitos_window.dnh"
 
 // Include local libraries
 
@@ -23,10 +24,12 @@
     let objWindow = ObjWindow_Create(REITOS_WINDOW_TYPE_REGULAR, 256, 256, "ReitOS System Information");
     NotifyEventAll(EV_USER_PACKAGE + 10, objWindow);
     // Create components to add to the window
+    let objBG = CreateBackground;
     let objIcon = CreateIcon;
     let objText = CreateText;
-    ObjWindow_AddComponent(objIcon);
-    ObjWindow_AddComponent(objText);
+    ObjWindow_AddComponent(objWindow, objBG);
+    ObjWindow_AddComponent(objWindow, objIcon);
+    ObjWindow_AddComponent(objWindow, objText);
 }
 
 @Event {
@@ -36,12 +39,23 @@
     yield;
 }
 
+function CreateBackground {
+    let objBG = ObjPrim_Create(OBJ_SPRITE_2D);
+    ObjPrim_SetTexture(objBG, GetCurrentScriptDirectory() ~ "../../sysimg/dot.jpg");
+    ObjSprite2D_SetSourceRect(objBG, 0, 0, 1, 1);
+    ObjSprite2D_SetDestRect(objBG, 0, 0, 256, 256);
+    ObjRender_SetColor(objBG, 224, 224, 224);
+    Obj_SetValue(objBG, "window_position", [0, 0]);
+    Obj_SetValue(objBG, "window_layer", 1); // Numbers between 0 and 8 are available (corresponds to Render Priorities of 11-19, 81-89)
+    return objBG;
+}
+
 function CreateIcon {
     let objIcon = ObjPrim_Create(OBJ_SPRITE_2D);
     ObjPrim_SetTexture(objIcon, GetCurrentScriptDirectory() ~ "./icon.png");
     ObjSprite2D_SetSourceRect(objIcon, 0, 0, 128, 128);
     ObjSprite2D_SetDestCenter(objIcon);
-    Obj_SetValue(objIcon, "window_position", [96, 128]);
+    Obj_SetValue(objIcon, "window_position", [80, 80]);
     Obj_SetValue(objIcon, "window_layer", 1); // Numbers between 0 and 8 are available (corresponds to Render Priorities of 11-19, 81-89)
     return objIcon;
 }
@@ -49,13 +63,13 @@ function CreateIcon {
 function CreateText {
     let objText = ObjText_Create();
     ObjText_SetText(objText, "ReitOS[r]Running on Touhou Danmakufu ph3");
-    ObjText_SetFontSize(objText, 24);
+    ObjText_SetFontSize(objText, 16);
     ObjText_SetFontType(objText, "Helvetica");
-    ObjText_SetFontColorTop(objText, 32, 32, 32);
-    ObjText_SetFontColorBottom(objText, 32, 32, 32);
+    ObjText_SetFontColorTop(objText, 96, 64, 64);
+    ObjText_SetFontColorBottom(objText, 64, 64, 96);
     ObjText_SetFontBorderType(objText, BORDER_NONE);
     ObjText_SetHorizontalAlignment(objText, ALIGNMENT_LEFT);
-    Obj_SetValue(objText, "window_position", [144, 128]);
+    Obj_SetValue(objText, "window_position", [16, 160]);
     Obj_SetValue(objText, "window_layer", 1); // Numbers between 0 and 8 are available (corresponds to Render Priorities of 11-19, 81-89)
     return objText;
 }
