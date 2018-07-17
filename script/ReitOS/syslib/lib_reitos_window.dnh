@@ -105,7 +105,8 @@ function ObjWindow_RemoveComponent(objWindow, component) {
 }
 
 /* *************************************************************************
-* ObjWindow_Destroy(objWindow) -- Destroys the Window and all components
+* ObjWindow_Destroy(objWindow) -- Destroys the Window and all components. 
+* Header and Header Components should be destroyed seperately
 ************************************************************************* */
 function ObjWindow_Destroy(objWindow) {
     // Destroy all components
@@ -209,13 +210,28 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
                 NotifyEventAll(EV_USER_PACKAGE + 12, objWindow);
             }
             // Close/Minimize. Naturally, these only work if Foreground. If was background, it has now been set to foreground.
-            
+            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PULL && Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_FOREGROUND &&
+                    mx > (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 24) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 8) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) + 8 && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + 24) {
+                // Close Window
+                Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED); // Tell __LIB_REITOS_WINDOW_Draw to delete the window and components
+                NotifyEventAll(EV_USER_PACKAGE + 11, objWindow); // Unstage the Window
+            }
+            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PULL && Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_FOREGROUND &&
+                    mx > (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 48) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 32) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) + 8 && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + 24) {
+                // Minimize Window
+                Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_MINIMIZED);
+            }
+
+            // Drag
+            //TODO
         }
 
         yield;
     }
     Obj_Delete(objHeader);
     Obj_Delete(objText);
+    Obj_Delete(objClose);
+    Obj_Delete(objMinimize);
 }
 
 // Draws Window and Window Components
@@ -262,4 +278,7 @@ task __LIB_REITOS_WINDOW_Draw(objWindow) {
 
         yield;
     }
+    ObjWindow_Destroy(objWindow);
+    // Remember to also close the application script!
+    //TODO
 }
