@@ -1,0 +1,3 @@
+Welcome to ReitOS, a real-life parody of Reito Aoba's operating system from SeitenTouji. 
+
+In this file, instructions on how to utilize ReitOS's capabilities will be provided. Eventually.
