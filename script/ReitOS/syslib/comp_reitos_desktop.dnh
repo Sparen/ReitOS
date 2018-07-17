@@ -1,0 +1,59 @@
+task __COMP_REITOS_DESKTOP_Start() {
+    let objects = []; // Store objects for eventual deletion
+    // Create Desktop Background
+    let objboot = ObjPrim_Create(OBJ_SPRITE_2D);
+    Obj_SetRenderPriorityI(objboot, 1);
+    ObjPrim_SetTexture(objboot, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
+    ObjSprite2D_SetSourceRect(objboot, 0, 0, 1, 1);
+    ObjSprite2D_SetDestRect(objboot, 0, 0, 800, 600);
+    ObjRender_SetColor(objboot, 32, 80, 160);
+    objects = objects ~ [objboot];
+
+    // Create Default Desktop Text
+    let objText = ObjText_Create();
+    Obj_SetRenderPriorityI(objText, 1);
+    ObjText_SetText(objText, "ReitOS");
+    ObjText_SetFontSize(objText, 64);
+    ObjText_SetFontBold(objText, true);
+    ObjText_SetFontType(objText, "Russell Square Regular");
+    ObjText_SetFontColorTop(objText, 255, 255, 255);
+    ObjText_SetFontColorBottom(objText, 255, 255, 255);
+    ObjText_SetFontBorderType(objText, BORDER_FULL);
+    ObjText_SetFontBorderWidth(objText, 2);
+    ObjText_SetFontBorderColor(objText, 16, 64, 144);
+    ObjText_SetHorizontalAlignment(objText, ALIGNMENT_RIGHT);
+    ObjText_SetMaxWidth(objText, 320);
+    ObjRender_SetPosition(objText, 800 - 32 - 320, 600 - 112, 1);
+    objects = objects ~ [objText];
+
+    // Create bottom bar
+    let objbottombar = ObjPrim_Create(OBJ_SPRITE_2D);
+    Obj_SetRenderPriorityI(objbottombar, 1);
+    ObjPrim_SetTexture(objbottombar, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
+    ObjSprite2D_SetSourceRect(objbottombar, 0, 0, 1, 1);
+    ObjSprite2D_SetDestRect(objbottombar, 0, 568, 800, 600);
+    ObjRender_SetColor(objbottombar, 128, 128, 128);
+    objects = objects ~ [objbottombar];
+
+    // Create top bar
+    let objtopbar = ObjPrim_Create(OBJ_SPRITE_2D);
+    Obj_SetRenderPriorityI(objtopbar, 1);
+    ObjPrim_SetTexture(objtopbar, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
+    ObjSprite2D_SetSourceRect(objtopbar, 0, 0, 1, 1);
+    ObjSprite2D_SetDestRect(objtopbar, 0, 0, 800, 32);
+    ObjRender_SetColor(objtopbar, 128, 128, 128);
+    objects = objects ~ [objtopbar];
+
+    // Setup Desktop Contents and run main tasks
+
+    // Main Loop
+    let running = true;
+    while(running) {
+        yield;
+    }
+
+    // Clean up Boot Sequence
+    ascent(i in 0..length(objects)) {
+        Obj_Delete(objects[i]);
+    }
+}

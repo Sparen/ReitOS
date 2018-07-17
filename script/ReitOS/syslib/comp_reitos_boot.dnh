@@ -71,7 +71,7 @@ task __COMP_REITOS_BOOT_Boot() {
         yield;
     }
 
-    loop(360) {yield;}
+    loop(240) {yield;}
 
     // Clean up Boot Sequence
     ascent(i in 0..length(objects)) {
