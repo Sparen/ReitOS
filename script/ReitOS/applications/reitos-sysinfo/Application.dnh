@@ -1,0 +1,28 @@
+/* ******************************************************************
+* ReitOS System Information
+* For use with Touhou Danmakufu ph3 ReitOS
+* (C) Sparen of Iria 2018
+* Version 1.0
+****************************************************************** */
+
+/* ******************************************************************
+* This application creates a window with information about the system.
+* Its primary use is as an example and template application.
+****************************************************************** */
+
+// Include libraries from syslib
+
+// Include local libraries
+
+@Loading {
+}
+
+@Initialize {
+}
+
+@Event {
+}
+
+@MainLoop {
+    yield;
+}

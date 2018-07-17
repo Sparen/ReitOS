@@ -40,6 +40,8 @@ Each Application must have a `PROPERTIES.TXT` file with the following:
 APPLICATION_NAME\&lt;Insert your application's name here&gt;
 VERSION_NUMBER\&lt;Insert your application's version number here&gt;
 AUTHOR\&lt;Insert your name here&gt;
+ICON\&lt;Insert path to icon here&gt;
+DRIVER\&lt;Insert path to script here&gt;
 ```
 
 For example:

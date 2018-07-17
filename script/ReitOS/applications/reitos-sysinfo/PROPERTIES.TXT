@@ -1,0 +1,5 @@
+APPLICATION_NAME\ReitOS System Information
+VERSION_NUMBER\1.00
+AUTHOR\Andrew Fan
+ICON\icon.png
+DRIVER\Application.dnh
