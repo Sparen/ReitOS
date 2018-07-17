@@ -6,12 +6,13 @@ ReitOS is a Touhou Danmakufu ph3 script that aims to mimic a proper operating sy
 
 # Usage
 
-This project is still in its infancy
+This project is still in its infancy. However, it is possible to use the provided copy of Danmakufu (`ReitOS.exe`) to run ReitOS.
 
 # Built-in Libraries and Applications
 
 ### Libraries
-None
+All libraries in ReitOS are either sourced from other repositories (marked with the appropriate release tag) or only exist in the ReitOS repository, in which case they will be marked as such.
+* lib_autoformat.dnh - [Danmakufu STL](https://github.com/Sparen/Sparen-DNH-STL) [Release: 2018-r001]
 
 ### Applications
 None
@@ -21,6 +22,8 @@ None
 ### Components and Core Systems
 
 The core of ReitOS is located in the package and the package components (`syslib/comp_reitos_*.dnh`). These functions and tasks, using the format `__COMP_REITOS_BOOT_*()`, utilize CommonData under Area `reitos_core`, with format `comp_reitos_boot_*`. 
+
+Component .dnh files SHOULD NOT `#include` other scripts. This is because all Components are #included by the main package, which should be the single place for #including the dependencies. Individual Applications of course are standalone scripts run by the Package, so these will #include whatever they need from syslib.
 
 ### Render Priorities
 
