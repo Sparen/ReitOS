@@ -31,7 +31,7 @@ As for the events in the package, it has three events (+10, 11, and 12) for stag
 ## Core Library
 The Core Library is the intermediary between libraries, the package, and Applications.
 
-The `Mouse_OnWindow` function determines if mouse is currently on the provided Window object. This means that given the render order of all existing windows, it returns true if the mouse is on the provided Window object AND the part of the Window object in question is visible (i.e. not covered by another Window Object).
+The `Mouse_OnWindow` function determines if mouse is currently on the provided Window object. This means that given the render order of all existing windows, it returns true if the mouse is on the provided Window object AND the part of the Window object in question is visible (i.e. not covered by another Window Object). (COMPLICATED LAYERING PART TO BE IMPLEMENTED LATER)
 
 ## Windowing Library
 The Windowing Library is a key library that creates and handles Window Objects. Window Objects are tied to Applications and have a variety of fields, such as their x and y coordinates (top left of the header), their height and width (height does not include 32 pixel header), their components (things rendered onto the window), and more. 
@@ -45,7 +45,40 @@ Window headers are 32 pixels tall and contain the minimize and close buttons as 
 In regards to interacting with Windows, clicking a Window should bring it to the foreground. Header dragging has yet to be implemented as of writing.
 
 # Writing an Application for ReitOS
-// Step by step, TODO
+We will use `applications/reitos-sysinfo` for this section.
+
+All Applications are standalone scripts that are allowed to `#include` as many of the libraries in `syslib/lib-*.dnh` as they want to. However, they cannot interact with each other. They are allowed to use EV_USER.
+
+Each Application must have a `PROPERTIES.TXT` file with the following:
+```
+APPLICATION_NAME\&lt;Insert your application's name here&gt;
+VERSION_NUMBER\&lt;Insert your application's version number here&gt;
+AUTHOR\&lt;Insert your name here&gt;
+ICON\&lt;Insert path to icon here&gt;
+DRIVER\&lt;Insert path to script here&gt;
+
+This file will eventually be used when displaying a list of all applications but is currently (as of writing) unused.
+
+In `@Initialize`, all Application scripts must do the following:
+```
+let objWindow = ObjWindow_Create(REITOS_WINDOW_TYPE_REGULAR, 256, 256, "Name");
+NotifyEventAll(EV_USER_PACKAGE + 10, objWindow);
+```
+Of course, the dimensions of the window and the name should be changed. This code will create a Window for the Application. Note that height and width are locked to the available space (UNTESTED?).
+
+After this, we will add components to the Window. Components are Primitive Objects.
+
+Note that Components should NOT set their own position or render priority. Instead, use the following, where `window_position` is the offset from the top left corner of the window (not including the header):
+```
+Obj_SetValue(objBG, "window_position", [0, 0]);
+Obj_SetValue(objBG, "window_layer", 1); // Numbers between 0 and 9 are available (corresponds to Render Priorities of 10-19, 90-99)
+```
+It is recommended that you not go beyond a render priority of 9, or the calculated render priority may overflow beyond 100 and Danmakufu will complain/do undefined behavior.
+
+These Components should be added to the Window using `ObjWindow_AddComponent()`.
+
+// TODO: Describe mouse interaction with Components.
+
 
 # Conventions
 
@@ -62,21 +95,4 @@ Component .dnh files SHOULD NOT `#include` other scripts. This is because all Co
 Render Priorities from 1 through 10 and 90 through 100 are reserved for the core system and built-in applications, while 11 through 19 and 81 through 89 are reserved for user applications.
 
 Application windows use render priority 10 (background) and 90 (foreground).
-
-### Applications
-
-All Applications are standalone scripts that are allowed to `#include` as many of the libraries in `syslib/lib-*.dnh` as they want to. However, they cannot interact with each other. They are allowed to use EV_USER.
-
-Each Application must have a `PROPERTIES.TXT` file with the following:
-```
-APPLICATION_NAME\&lt;Insert your application's name here&gt;
-VERSION_NUMBER\&lt;Insert your application's version number here&gt;
-AUTHOR\&lt;Insert your name here&gt;
-ICON\&lt;Insert path to icon here&gt;
-DRIVER\&lt;Insert path to script here&gt;
-```
-
-For example:
-
-(Example will be provided once this step in development is reached)
 

@@ -46,7 +46,7 @@ function CreateBackground {
     ObjSprite2D_SetDestRect(objBG, 0, 0, 256, 256);
     ObjRender_SetColor(objBG, 224, 224, 224);
     Obj_SetValue(objBG, "window_position", [0, 0]);
-    Obj_SetValue(objBG, "window_layer", 1); // Numbers between 0 and 8 are available (corresponds to Render Priorities of 11-19, 81-89)
+    Obj_SetValue(objBG, "window_layer", 1); // Numbers between 0 and 9 are available (corresponds to Render Priorities of 10-19, 90-99)
     return objBG;
 }
 
@@ -56,7 +56,7 @@ function CreateIcon {
     ObjSprite2D_SetSourceRect(objIcon, 0, 0, 128, 128);
     ObjSprite2D_SetDestCenter(objIcon);
     Obj_SetValue(objIcon, "window_position", [80, 80]);
-    Obj_SetValue(objIcon, "window_layer", 1); // Numbers between 0 and 8 are available (corresponds to Render Priorities of 11-19, 81-89)
+    Obj_SetValue(objIcon, "window_layer", 1); // Numbers between 0 and 9 are available (corresponds to Render Priorities of 10-19, 90-99)
     return objIcon;
 }
 
