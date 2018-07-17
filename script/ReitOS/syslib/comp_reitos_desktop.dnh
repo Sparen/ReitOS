@@ -1,5 +1,4 @@
 task __COMP_REITOS_DESKTOP_Start() {
-    let objects = []; // Store objects for eventual deletion
     // Create Desktop Background
     let objboot = ObjPrim_Create(OBJ_SPRITE_2D);
     Obj_SetRenderPriorityI(objboot, 1);
@@ -7,7 +6,6 @@ task __COMP_REITOS_DESKTOP_Start() {
     ObjSprite2D_SetSourceRect(objboot, 0, 0, 1, 1);
     ObjSprite2D_SetDestRect(objboot, 0, 0, 800, 600);
     ObjRender_SetColor(objboot, 32, 80, 160);
-    objects = objects ~ [objboot];
 
     // Create Default Desktop Text
     let objText = ObjText_Create();
@@ -24,36 +22,93 @@ task __COMP_REITOS_DESKTOP_Start() {
     ObjText_SetHorizontalAlignment(objText, ALIGNMENT_RIGHT);
     ObjText_SetMaxWidth(objText, 320);
     ObjRender_SetPosition(objText, 800 - 32 - 320, 600 - 112, 1);
-    objects = objects ~ [objText];
 
-    // Create bottom bar
-    let objbottombar = ObjPrim_Create(OBJ_SPRITE_2D);
-    Obj_SetRenderPriorityI(objbottombar, 1);
-    ObjPrim_SetTexture(objbottombar, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
-    ObjSprite2D_SetSourceRect(objbottombar, 0, 0, 1, 1);
-    ObjSprite2D_SetDestRect(objbottombar, 0, 568, 800, 600);
-    ObjRender_SetColor(objbottombar, 128, 128, 128);
-    objects = objects ~ [objbottombar];
+    // Setup Desktop Contents and run main tasks
+    __COMP_REITOS_DESKTOP_TopBar;
+    __COMP_REITOS_DESKTOP_BottomBar
+}
 
+task __COMP_REITOS_DESKTOP_TopBar {
     // Create top bar
     let objtopbar = ObjPrim_Create(OBJ_SPRITE_2D);
     Obj_SetRenderPriorityI(objtopbar, 1);
     ObjPrim_SetTexture(objtopbar, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
     ObjSprite2D_SetSourceRect(objtopbar, 0, 0, 1, 1);
     ObjSprite2D_SetDestRect(objtopbar, 0, 0, 800, 32);
-    ObjRender_SetColor(objtopbar, 128, 128, 128);
-    objects = objects ~ [objtopbar];
+    ObjRender_SetColor(objtopbar, 192, 192, 192);
 
-    // Setup Desktop Contents and run main tasks
+    let objtopbar2 = ObjPrim_Create(OBJ_SPRITE_2D);
+    Obj_SetRenderPriorityI(objtopbar2, 1);
+    ObjPrim_SetTexture(objtopbar2, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
+    ObjSprite2D_SetSourceRect(objtopbar2, 0, 0, 1, 1);
+    ObjSprite2D_SetDestRect(objtopbar2, 2, 2, 798, 30);
+    ObjRender_SetColor(objtopbar2, 128, 128, 128);
 
-    // Main Loop
-    let running = true;
-    while(running) {
+    // Run topbar tasks
+    __COMP_REITOS_DESKTOP_QuitButton;
+    __COMP_REITOS_DESKTOP_DateTime;
+}
+
+task __COMP_REITOS_DESKTOP_QuitButton {
+    let obj = ObjPrim_Create(OBJ_SPRITE_2D);
+    Obj_SetRenderPriorityI(obj, 1);
+    ObjPrim_SetTexture(obj, GetCurrentScriptDirectory() ~ "../sysimg/icon_quit.png");
+    ObjSprite2D_SetSourceRect(obj, 0, 0, 128, 128);
+    ObjSprite2D_SetDestCenter(obj);
+    ObjRender_SetScaleXYZ(obj, 0.2, 0.2, 1);
+    ObjRender_SetColor(obj, 192, 192, 192);
+    ObjRender_SetPosition(obj, 800 - 24, 16, 0);
+    while(true) {
+        // Check mouse status
+        let mx = GetCommonData("reitos_mouse_x", 0);
+        let my = GetCommonData("reitos_mouse_y", 0);
+        if (mx > 800 - 48 && mx < 800 && my > 0 && my < 32) {
+            ObjRender_SetColor(obj, 255, 255, 255);
+            if (GetCommonData("reitos_mouse_statel", KEY_FREE) != KEY_FREE) {
+                ClosePackage();
+            }
+        } else {
+            ObjRender_SetColor(obj, 192, 192, 192);
+        }
         yield;
     }
+}
 
-    // Clean up Boot Sequence
-    ascent(i in 0..length(objects)) {
-        Obj_Delete(objects[i]);
+task __COMP_REITOS_DESKTOP_DateTime {
+    let objText = ObjText_Create();
+    Obj_SetRenderPriorityI(objText, 1);
+    ObjText_SetText(objText, "");
+    ObjText_SetFontSize(objText, 16);
+    ObjText_SetFontType(objText, "Russell Square Regular");
+    ObjText_SetFontColorTop(objText, 255, 255, 255);
+    ObjText_SetFontColorBottom(objText, 255, 255, 255);
+    ObjText_SetFontBorderType(objText, BORDER_FULL);
+    ObjText_SetFontBorderWidth(objText, 2);
+    ObjText_SetFontBorderColor(objText, 96, 96, 96);
+    ObjText_SetHorizontalAlignment(objText, ALIGNMENT_RIGHT);
+    ObjText_SetMaxWidth(objText, 320);
+    ObjRender_SetPosition(objText, 800 - 48 - 320, 8, 1);
+    while(true) {
+        // We will only update this every 30 frames.
+        let time = GetCurrentDateTimeS;
+        ObjText_SetText(objText, time[8..10] ~ ":" ~ time[10..12] ~ ":" ~ time[12..14]);
+        loop(30) {yield;}
     }
+}
+
+task __COMP_REITOS_DESKTOP_BottomBar {
+    // Create bottom bar
+    let objbottombar = ObjPrim_Create(OBJ_SPRITE_2D);
+    Obj_SetRenderPriorityI(objbottombar, 1);
+    ObjPrim_SetTexture(objbottombar, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
+    ObjSprite2D_SetSourceRect(objbottombar, 0, 0, 1, 1);
+    ObjSprite2D_SetDestRect(objbottombar, 0, 568, 800, 600);
+    ObjRender_SetColor(objbottombar, 192, 192, 192);
+
+    let objbottombar2 = ObjPrim_Create(OBJ_SPRITE_2D);
+    Obj_SetRenderPriorityI(objbottombar2, 1);
+    ObjPrim_SetTexture(objbottombar2, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
+    ObjSprite2D_SetSourceRect(objbottombar2, 0, 0, 1, 1);
+    ObjSprite2D_SetDestRect(objbottombar2, 2, 570, 798, 598);
+    ObjRender_SetColor(objbottombar2, 128, 128, 128);
 }

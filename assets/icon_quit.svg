@@ -1,0 +1,23 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="128" height="128" version="1.1"
+     xmlns="http://www.w3.org/2000/svg">
+
+     <path d="M 16 64 H 4" stroke="#FFFFFF" fill="none" stroke-width="12" />
+     <path d="M 112 64 H 124" stroke="#FFFFFF" fill="none" stroke-width="12" />
+     <path d="M 64 60 V 4" stroke="#FFFFFF" fill="none" stroke-width="18" />
+     <path d="M 64 112 V 124" stroke="#FFFFFF" fill="none" stroke-width="12" />
+
+     <path d="M 32 28 A 48 48 0 1 0 96 28" stroke="#FFFFFF" fill="none" stroke-width="12" />
+     <!-- Below outlines look like trash when image is scaled down significantly -->
+     <!--
+     <path d="M 32 28 A 48 48 0 1 0 96 28" stroke="#22CC88" fill="none" stroke-width="2" />
+
+     <path d="M 16 64 H 8" stroke="#22CC88" fill="none" stroke-width="2" />
+     <path d="M 112 64 H 120" stroke="#22CC88" fill="none" stroke-width="2" />
+     <path d="M 64 112 V 120" stroke="#22CC88" fill="none" stroke-width="2" />
+
+     <path d="M 68 4 V 8 H 60 V 16 H 68 V 24 H 60 V 32 H 68 V 40 H 60 V 48 H 68 V 56 H 60 V 60" stroke="#22CC88" fill="none" stroke-width="2" />
+     -->
+</svg>
