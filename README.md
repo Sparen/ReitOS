@@ -12,7 +12,10 @@ This project is still in its infancy. However, it is possible to use the provide
 
 ### Libraries
 All libraries in ReitOS are either sourced from other repositories (marked with the appropriate release tag) or only exist in the ReitOS repository, in which case they will be marked as such.
-* lib_autoformat.dnh - [Danmakufu STL](https://github.com/Sparen/Sparen-DNH-STL) [Release: 2018-r001]
+* lib_autoformat.dnh - [Danmakufu STL](https://github.com/Sparen/Sparen-DNH-STL) [Release: 2018-r001]  
+* lib_reitos_window.dnh  
+* stl_queue.dnh - [Danmakufu STL](https://github.com/Sparen/Sparen-DNH-STL) [Release: 2018-r001]  
+* stl_stack.dnh - [Danmakufu STL](https://github.com/Sparen/Sparen-DNH-STL) [Release: 2018-r001]  
 
 ### Applications
 None
@@ -27,9 +30,9 @@ Component .dnh files SHOULD NOT `#include` other scripts. This is because all Co
 
 ### Render Priorities
 
-Render Priorities from 1 through 10 and 90 through 100 are reserved for the core system and built-in applications, while 11 through 19 and 80 through 89 are reserved for user applications.
+Render Priorities from 1 through 10 and 90 through 100 are reserved for the core system and built-in applications, while 11 through 19 and 81 through 89 are reserved for user applications.
 
-Application windows use render priority 10.
+Application windows use render priority 10 (background) and 90 (foreground).
 
 ### Applications
 

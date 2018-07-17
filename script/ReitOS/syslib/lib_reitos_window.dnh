@@ -1,0 +1,203 @@
+/* ******************************************************************
+* ReitOS Windowing Library
+* For use with Touhou Danmakufu ph3
+* (C) Sparen of Iria 2018
+*
+* Code in this library is under the MIT License and may be 
+* redistributed/modified without express permission
+****************************************************************** */
+
+/* ******************************************************************
+* This library allows for the creation of windows in ReitOS. These have a 32 pixel header.
+* x and y refer to top left of window HEADER, and the header is not included in the height.
+* For library brevity, set and get methods will not be provided.
+* It is recommended that Obj_SetValue/Obj_GetValueD be used directly.
+****************************************************************** */
+
+/* ******************************************************************
+* Public Methods:
+* ObjWindow_Create()
+* ObjWindow_AddComponent()
+* ObjWindow_RemoveComponent()
+* ObjWindow_Destroy();
+*
+* Fields:
+* x, y (refer to top left of header)
+* height, width (height does not include 32 pixel header)
+* type (window type; see constants below)
+* status (status of window; see constants below)
+* name (name of window)
+* components (objects that are positioned relative to the window)
+************************************************************************* */
+
+let REITOS_WINDOW_TYPE_REGULAR = 1;
+
+let REITOS_WINDOW_STATUS_FOREGROUND = 1;
+let REITOS_WINDOW_STATUS_BACKGROUND = 2;
+let REITOS_WINDOW_STATUS_MINIMIZED = 3;
+let REITOS_WINDOW_STATUS_CLOSED = 4;
+
+/* *************************************************************************
+* ObjWindow_Create(type, height, width, name) -- Creates a new Window Object.
+* Return: New Window Object
+************************************************************************* */
+function ObjWindow_Create(type, height, width, name) {
+    // Create a new Window Object using a primitive object as a wrapper
+    let objWindow = ObjPrim_Create(OBJ_SPRITE_2D);
+    // Set fields
+    Obj_SetValue(objWindow, "reitos_window_type", type);
+    if (height > 600 - 96) {
+        WriteLog("WARNING: ObjWindow_Create: Maximum allowed height is 504 pixels. Limiting to 504 pixels.")
+    }
+    Obj_SetValue(objWindow, "reitos_window_height", min(height, 600 - 96));
+    if (width > 800) {
+        WriteLog("WARNING: ObjWindow_Create: Maximum allowed width is 800 pixels. Limiting to 800 pixels.")
+    }
+    Obj_SetValue(objWindow, "reitos_window_width", min(width, 800));
+    // New windows default to center of screen
+    Obj_SetValue(objWindow, "reitos_window_x", 400 - width/2);
+    Obj_SetValue(objWindow, "reitos_window_y", 300 - height/2 - 16);
+    // New windows are in the foreground
+    Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_FOREGROUND);
+    Obj_SetValue(objWindow, "reitos_window_name", name);
+    Obj_SetValue(objWindow, "reitos_window_components", []);
+
+    // Create window components
+    Obj_SetRenderPriorityI(objWindow, 10); // Window is above all desktop items but below user-controlled area
+    ObjPrim_SetTexture(objWindow, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
+    ObjSprite2D_SetSourceRect(objWindow, 0, 0, 1, 1);
+    ObjSprite2D_SetDestRect(objWindow, 0, 32, Obj_GetValueD(objWindow, "reitos_window_width", 32), Obj_GetValueD(objWindow, "reitos_window_height", 32) + 32);
+    ObjRender_SetColor(objWindow, 0, 0, 0);
+    ObjRender_SetPosition(objWindow, Obj_GetValueD(objWindow, "reitos_window_x", 0), Obj_GetValueD(objWindow, "reitos_window_y", 0) + 32, 0);
+
+    // Call update tasks on components
+    __LIB_REITOS_WINDOW_Header(objWindow);
+    __LIB_REITOS_WINDOW_Draw(objWindow);
+
+    return objWindow;
+}
+
+/* *************************************************************************
+* ObjWindow_AddComponent(objWindow, component) -- Adds a component to the Window
+************************************************************************* */
+function ObjWindow_AddComponent(objWindow, component) {
+    let components = Obj_GetValueD(objWindow, "reitos_window_components", []);
+    components = components ~ [component];
+    Obj_SetValue(objWindow, "reitos_window_components", components);
+}
+
+/* *************************************************************************
+* ObjWindow_RemoveComponent(objWindow, component) -- Removes a component from the Window
+************************************************************************* */
+function ObjWindow_RemoveComponent(objWindow, component) {
+    let components = Obj_GetValueD(objWindow, "reitos_window_components", []);
+    ascent(i in 0..length(components)) {
+        if (components[i] == component) {
+            erase(components, i);
+        }
+    }
+    Obj_SetValue(objWindow, "reitos_window_components", components);
+}
+
+/* *************************************************************************
+* ObjWindow_Destroy(objWindow) -- Destroys the Window and all components
+************************************************************************* */
+function ObjWindow_Destroy(objWindow) {
+    // Destroy all components
+    let components = Obj_GetValueD(objWindow, "reitos_window_components", []);
+    ascent(i in 0..length(components)) {
+        Obj_Delete(components[i]);
+    }
+    // Unstage Window from Bottom Bar
+    NotifyEventAll(EV_USER_PACKAGE + 11, objWindow);
+    // Delete Window
+    Obj_Delete(objWindow);
+}
+
+// Draws Header and Header Components
+task __LIB_REITOS_WINDOW_Header(objWindow) {
+    // Create the header
+    let objHeader = ObjPrim_Create(OBJ_SPRITE_2D);
+    Obj_SetRenderPriorityI(objHeader, 90); // Window is above all desktop items but below user-controlled area
+    ObjPrim_SetTexture(objHeader, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
+    ObjSprite2D_SetSourceRect(objHeader, 0, 0, 1, 1);
+    ObjSprite2D_SetDestRect(objHeader, 0, 0, Obj_GetValueD(objWindow, "reitos_window_width", 32), Obj_GetValueD(objWindow, "reitos_window_height", 32));
+    ObjRender_SetColor(objHeader, 208, 208, 192);
+    ObjRender_SetPosition(objHeader, Obj_GetValueD(objWindow, "reitos_window_x", 0), Obj_GetValueD(objWindow, "reitos_window_y", 0), 0);
+
+    // Create text object with name, as well as minimize and close buttons
+    let objText = ObjText_Create();
+    Obj_SetRenderPriorityI(objText, 90);
+    ObjText_SetText(objText, Obj_GetValueD(objWindow, "reitos_window_name", "unknown application"));
+    ObjText_SetFontSize(objText, 24);
+    ObjText_SetFontBold(objText, true);
+    ObjText_SetFontType(objText, "Helvetica");
+    ObjText_SetFontColorTop(objText, 32, 32, 32);
+    ObjText_SetFontColorBottom(objText, 32, 32, 32);
+    ObjText_SetFontBorderType(objText, BORDER_NONE);
+    ObjText_SetHorizontalAlignment(objText, ALIGNMENT_LEFT);
+    ObjRender_SetPosition(objText, Obj_GetValueD(objWindow, "reitos_window_x", 0) + 32, Obj_GetValueD(objWindow, "reitos_window_y", 0) + 8, 1);
+
+    let status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
+    while (status != REITOS_WINDOW_STATUS_CLOSED) {
+        status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
+
+        if (status == REITOS_WINDOW_STATUS_FOREGROUND) {
+            Obj_SetVisible(objHeader, true);
+            Obj_SetVisible(objText, true);
+            ObjRender_SetPosition(objHeader, Obj_GetValueD(objWindow, "reitos_window_x", 0), Obj_GetValueD(objWindow, "reitos_window_y", 0), 0);
+            ObjRender_SetPosition(objText, Obj_GetValueD(objWindow, "reitos_window_x", 0) + 8, Obj_GetValueD(objWindow, "reitos_window_y", 0) + 8, 1);
+            ObjRender_SetColor(objHeader, 208, 208, 192);
+            Obj_SetRenderPriorityI(objHeader, 90);
+            Obj_SetRenderPriorityI(objText, 90);
+        } else if (status == REITOS_WINDOW_STATUS_BACKGROUND) {
+            Obj_SetVisible(objHeader, true);
+            Obj_SetVisible(objText, true);
+            ObjRender_SetPosition(objHeader, Obj_GetValueD(objWindow, "reitos_window_x", 0), Obj_GetValueD(objWindow, "reitos_window_y", 0), 0);
+            ObjRender_SetPosition(objText, Obj_GetValueD(objWindow, "reitos_window_x", 0) + 8, Obj_GetValueD(objWindow, "reitos_window_y", 0) + 8, 1);
+            ObjRender_SetColor(objHeader, 224, 224, 208);
+            Obj_SetRenderPriorityI(objHeader, 10);
+            Obj_SetRenderPriorityI(objText, 10);
+        } else if (status == REITOS_WINDOW_STATUS_MINIMIZED) {
+            Obj_SetVisible(objHeader, false);
+            Obj_SetVisible(objText, false);
+        }
+        yield;
+    }
+    Obj_Delete(objHeader);
+    Obj_Delete(objText);
+}
+
+// Draws Window and Window Components
+task __LIB_REITOS_WINDOW_Draw(objWindow) {
+    let status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
+    while (status != REITOS_WINDOW_STATUS_CLOSED) {
+        status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
+        let components = Obj_GetValueD(objWindow, "reitos_window_components", []);
+        if (status == REITOS_WINDOW_STATUS_FOREGROUND) {
+            Obj_SetVisible(objWindow, true);
+            ObjRender_SetPosition(objWindow, Obj_GetValueD(objWindow, "reitos_window_x", 0), Obj_GetValueD(objWindow, "reitos_window_y", 0), 0);
+            Obj_SetRenderPriorityI(objWindow, 90);
+            ascent(i in 0..length(components)) {
+                Obj_SetVisible(components[i], true);
+                ObjRender_SetPosition(components[i], Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(components[i], "window_position", [0, 0])[0], Obj_GetValueD(objWindow, "reitos_window_y", 0) + Obj_GetValueD(components[i], "window_position", [0, 0])[1], 0);
+                Obj_SetRenderPriorityI(components[i], 90);
+            }
+        } else if (status == REITOS_WINDOW_STATUS_BACKGROUND) {
+            Obj_SetVisible(objWindow, true);
+            ObjRender_SetPosition(objWindow, Obj_GetValueD(objWindow, "reitos_window_x", 0), Obj_GetValueD(objWindow, "reitos_window_y", 0), 0);
+            Obj_SetRenderPriorityI(objWindow, 10);
+            ascent(i in 0..length(components)) {
+                Obj_SetVisible(components[i], true);
+                ObjRender_SetPosition(components[i], Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(components[i], "window_position", [0, 0])[0], Obj_GetValueD(objWindow, "reitos_window_y", 0) + Obj_GetValueD(components[i], "window_position", [0, 0])[1], 0);
+                Obj_SetRenderPriorityI(components[i], 10);
+            }
+        } else if (status == REITOS_WINDOW_STATUS_MINIMIZED) {
+            Obj_SetVisible(objWindow, false);
+            ascent(i in 0..length(components)) {
+                Obj_SetVisible(components[i], false);
+            }
+        }
+        yield;
+    }
+}
