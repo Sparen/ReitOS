@@ -21,12 +21,6 @@ All libraries in ReitOS are either sourced from other repositories (marked with 
 ### Applications
 * ReitOS System Information (v1.00)
 
-# TODO
-
-* Dock for applications
-
-* Design ReitOSnav (Finder system) for clicking on desktop, opening folders, and navigating directory structure
-
 # Contributing
 
 Once this system is up and running, I'll consider features, etc.

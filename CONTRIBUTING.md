@@ -42,7 +42,7 @@ Windows are created with their type, height and width, and name. They always spa
 
 Window headers are 32 pixels tall and contain the minimize and close buttons as well as the title.
 
-In regards to interacting with Windows, clicking a Window should bring it to the foreground. Header dragging has yet to be implemented as of writing.
+In regards to interacting with Windows, clicking a Window should bring it to the foreground.
 
 # Writing an Application for ReitOS
 We will use `applications/reitos-sysinfo` for this section.
@@ -90,6 +90,8 @@ The core of ReitOS is located in the package and the package components (`syslib
 Component .dnh files SHOULD NOT `#include` other scripts. This is because all Components are #included by the main package, which should be the single place for #including the dependencies. Individual Applications of course are standalone scripts run by the Package, so these will #include whatever they need from syslib.
 
 `EV_USER_PACKAGE + 0..2000` are reserved for built-in systems and those numbers should not be used in custom Application events.
+
+Interactable components of the core (ex: Quit button, Window Close and Minimize buttons) must all use KEY_PULL with no exceptions. This is to prevent the accidental clicking via KEY_PUSH and the possibility that something is being dragged (KEY_HOLD). Consequences of the latter involve the mouse dragging a Window over the quit button and accidentally quitting the application, etc.
 
 ### Render Priorities
 

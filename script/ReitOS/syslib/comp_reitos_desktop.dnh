@@ -65,7 +65,7 @@ task __COMP_REITOS_DESKTOP_QuitButton {
         let my = GetCommonData("reitos_mouse_y", 0);
         if (mx > 800 - 48 && mx < 800 && my > 0 && my < 32) {
             ObjRender_SetColor(obj, 255, 255, 255);
-            if (GetCommonData("reitos_mouse_statel", KEY_FREE) != KEY_FREE) {
+            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PULL) {
                 ClosePackage();
             }
         } else {
@@ -112,7 +112,7 @@ task __COMP_REITOS_DESKTOP_SystemApp {
         let my = GetCommonData("reitos_mouse_y", 0);
         if (mx > 0 && mx < 48 && my > 0 && my < 32) {
             ObjRender_SetColor(obj, 255, 255, 255);
-            if (GetCommonData("reitos_mouse_statel", KEY_FREE) != KEY_FREE) {
+            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PULL) {
                 let app = LoadScript(GetCurrentScriptDirectory() ~ "./../applications/reitos-sysinfo/Application.dnh");
                 StartScript(app);
             }
@@ -170,7 +170,7 @@ task __COMP_REITOS_DESKTOP_ApplicationButton {
         let my = GetCommonData("reitos_mouse_y", 0);
         if (mx > 3 && mx < 61 && my > 600 - 29 && my < 597) {
             ObjRender_SetColor(objbutton, 255, 255, 255);
-            if (GetCommonData("reitos_mouse_statel", KEY_FREE) != KEY_FREE) {
+            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PULL) {
                 // Open Application Menu
             }
         } else {
