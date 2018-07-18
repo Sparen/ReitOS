@@ -176,6 +176,7 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
             ObjRender_SetPosition(objClose, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 16, Obj_GetValueD(objWindow, "reitos_window_y", 0) + 16, 0);
             ObjRender_SetPosition(objMinimize, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 40, Obj_GetValueD(objWindow, "reitos_window_y", 0) + 16, 0);
             ObjRender_SetColor(objHeader, 208, 208, 192);
+            ObjRender_SetAlpha(objText, 255);
             Obj_SetRenderPriorityI(objHeader, 90);
             Obj_SetRenderPriorityI(objText, 90);
             Obj_SetRenderPriorityI(objClose, 90);
@@ -190,6 +191,7 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
             ObjRender_SetPosition(objClose, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 16, Obj_GetValueD(objWindow, "reitos_window_y", 0) + 16, 0);
             ObjRender_SetPosition(objMinimize, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 40, Obj_GetValueD(objWindow, "reitos_window_y", 0) + 16, 0);
             ObjRender_SetColor(objHeader, 224, 224, 208);
+            ObjRender_SetAlpha(objText, 128);
             Obj_SetRenderPriorityI(objHeader, 10);
             Obj_SetRenderPriorityI(objText, 10);
             Obj_SetRenderPriorityI(objClose, 10);
