@@ -68,12 +68,15 @@ function ObjWindow_Create(type, height, width, name) {
     Obj_SetValue(objWindow, "reitos_window_components", []);
 
     // Create window components
-    Obj_SetRenderPriorityI(objWindow, 10); // Window is above all desktop items but below user-controlled area
+    Obj_SetRenderPriorityI(objWindow, 90);
     ObjPrim_SetTexture(objWindow, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
     ObjSprite2D_SetSourceRect(objWindow, 0, 0, 1, 1);
     ObjSprite2D_SetDestRect(objWindow, 0, 32, Obj_GetValueD(objWindow, "reitos_window_width", 32), Obj_GetValueD(objWindow, "reitos_window_height", 32) + 32);
     ObjRender_SetColor(objWindow, 0, 0, 0);
     ObjRender_SetPosition(objWindow, Obj_GetValueD(objWindow, "reitos_window_x", 0), Obj_GetValueD(objWindow, "reitos_window_y", 0) + 32, 0);
+
+    // Force all other windows to background
+    NotifyEventAll(EV_USER_PACKAGE + 12, objWindow);
 
     // Call update tasks on components
     __LIB_REITOS_WINDOW_Header(objWindow);
@@ -207,8 +210,8 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
         // Check mouse status
         let mx = GetCommonData("reitos_mouse_x", 0);
         let my = GetCommonData("reitos_mouse_y", 0);
-        if (Mouse_OnWindow(objWindow)) {
-            if (GetCommonData("reitos_mouse_statel", KEY_FREE) != KEY_FREE && status == REITOS_WINDOW_STATUS_BACKGROUND) {
+        if (Mouse_OnWindow(objWindow)) { // Note that this checks if the mouse is on the WINDOW, not just the header.
+            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PUSH && status == REITOS_WINDOW_STATUS_BACKGROUND) {
                 Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_FOREGROUND);
                 // Notify package that existing foreground window must be moved to background
                 NotifyEventAll(EV_USER_PACKAGE + 12, objWindow);
@@ -295,7 +298,7 @@ task __LIB_REITOS_WINDOW_Draw(objWindow) {
         let mx = GetCommonData("reitos_mouse_x", 0);
         let my = GetCommonData("reitos_mouse_y", 0);
         if (Mouse_OnWindow(objWindow)) {
-            if (GetCommonData("reitos_mouse_statel", KEY_FREE) != KEY_FREE) {
+            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PUSH && status == REITOS_WINDOW_STATUS_BACKGROUND) {
                 Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_FOREGROUND);
                 // Notify package that existing foreground window must be moved to background
                 NotifyEventAll(EV_USER_PACKAGE + 12, objWindow);
@@ -305,6 +308,4 @@ task __LIB_REITOS_WINDOW_Draw(objWindow) {
         yield;
     }
     ObjWindow_Destroy(objWindow);
-    // Remember to also close the application script!
-    //TODO
 }

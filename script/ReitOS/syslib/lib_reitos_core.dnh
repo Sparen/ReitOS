@@ -31,8 +31,8 @@
 
 
 /* *************************************************************************
-* Mouse_OnWindow(objWindow) -- Determines if the mouse is present on the selected window.
-* Return: true if mouse is on the specified window; false otherwise.
+* Mouse_OnWindow(objWindow) -- Determines if the mouse is present on the selected window + header.
+* Return: true if mouse is on the specified window + header; false otherwise.
 ************************************************************************* */
 function Mouse_OnWindow(objWindow) {
     // If window is closed, does not exist, or is minimized, return false
@@ -41,12 +41,23 @@ function Mouse_OnWindow(objWindow) {
     }
     let mx = GetCommonData("reitos_mouse_x", 0);
     let my = GetCommonData("reitos_mouse_y", 0);
-    // First check if the mouse is on the current window
-    if (mx < Obj_GetValueD(objWindow, "reitos_window_x", 0) || mx > Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 0) || my < Obj_GetValueD(objWindow, "reitos_window_y", 0) || my > Obj_GetValueD(objWindow, "reitos_window_y", 0) + 32) {
+    // First check if the mouse is on the current window + header
+    if (mx < Obj_GetValueD(objWindow, "reitos_window_x", 0) || mx > Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 0) || my < Obj_GetValueD(objWindow, "reitos_window_y", 0) || my > Obj_GetValueD(objWindow, "reitos_window_y", 0) + Obj_GetValueD(objWindow, "reitos_window_height", 0) + 32) {
         return false;
     }
     // Next go through the list of windows that are on Foreground or Background but are not the current window
-    // TODO
+    let currrunning = GetCommonData("reitos_running", []);
+    let under = true; // Whether we are underneath the window (doesn't matter) or above the window (check for blocking)
+    ascent(i in 0..length(currrunning)) {
+        if (currrunning[i] == objWindow) {
+            under = false;
+        } else if (!under) {
+            // Check dimensions. If mouse on this window (which renders above objWindow), then return false
+            if (mx > Obj_GetValueD(currrunning[i], "reitos_window_x", 0) && mx < Obj_GetValueD(currrunning[i], "reitos_window_x", 0) + Obj_GetValueD(currrunning[i], "reitos_window_width", 0) && my > Obj_GetValueD(currrunning[i], "reitos_window_y", 0) && my < Obj_GetValueD(currrunning[i], "reitos_window_y", 0) + Obj_GetValueD(currrunning[i], "reitos_window_height", 0) + 32) {
+                return false;
+            }
+        }
+    }
 
     return true;
 }

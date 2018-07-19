@@ -61,16 +61,28 @@ DRIVER\&lt;Insert path to script here&gt;
 This file will eventually be used when displaying a list of all applications but is currently (as of writing) unused.
 
 In `@Initialize`, all Application scripts must do the following:
-```
+```java
 let objWindow = ObjWindow_Create(REITOS_WINDOW_TYPE_REGULAR, 256, 256, "Name");
 NotifyEventAll(EV_USER_PACKAGE + 10, objWindow);
+...
+TFinalize(objWindow);
 ```
-Of course, the dimensions of the window and the name should be changed. This code will create a Window for the Application. Note that height and width are locked to the available space (UNTESTED?).
+Of course, the dimensions of the window and the name should be changed. This code will create a Window for the Application. Note that height and width are locked to the available space (UNTESTED?). TFinalize is a task that does the following:
+```java
+task TFinalize(objWindow) {
+    while (!Obj_IsDeleted(objWindow)) {
+        yield;
+    }
+    yield; // Buffer frame
+    CloseScript(GetOwnScriptID());
+}
+```
+Feel free to add other code to this task, as long as the script closes itself once its Window has been deleted. Note that Windows will call `ObjWindow_Destroy()` on themselves once they are closed, so all components you add to a Window (see below) will be deleted by the Window Object itself.
 
-After this, we will add components to the Window. Components are Primitive Objects.
+Now that our @Initialize is set up, we will add components to the Window. Components are Primitive Objects.
 
 Note that Components should NOT set their own position or render priority. Instead, use the following, where `window_position` is the offset from the top left corner of the window (not including the header):
-```
+```java
 Obj_SetValue(objBG, "window_position", [0, 0]);
 Obj_SetValue(objBG, "window_layer", 1); // Numbers between 0 and 9 are available (corresponds to Render Priorities of 10-19, 90-99)
 ```

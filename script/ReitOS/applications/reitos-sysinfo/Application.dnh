@@ -30,6 +30,9 @@
     ObjWindow_AddComponent(objWindow, objBG);
     ObjWindow_AddComponent(objWindow, objIcon);
     ObjWindow_AddComponent(objWindow, objText);
+
+    UpdateText(objText, objWindow);
+    TFinalize(objWindow);
 }
 
 @Event {
@@ -72,4 +75,28 @@ function CreateText {
     Obj_SetValue(objText, "window_position", [16, 160]);
     Obj_SetValue(objText, "window_layer", 1); // Numbers between 0 and 8 are available (corresponds to Render Priorities of 11-19, 81-89)
     return objText;
+}
+
+// This task is primarily used as a debug tool, and its invocation should be commented out when ReitOS is put into production mode.
+task UpdateText(objText, objWindow) {
+    while(!Obj_IsDeleted(objWindow)) {
+        let additionaltext = "";
+        let winstatus = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
+        if (winstatus == REITOS_WINDOW_STATUS_FOREGROUND) {
+            additionaltext = additionaltext ~ "DEBUG: Foreground";
+        } else if (winstatus == REITOS_WINDOW_STATUS_BACKGROUND) {
+            additionaltext = additionaltext ~ "DEBUG: Background";
+        }
+        ObjText_SetText(objText, "ReitOS[r]Running on Touhou Danmakufu ph3[r]" ~ additionaltext);
+        yield;
+    }
+}
+
+// While the window exists, this script continues running.
+task TFinalize(objWindow) {
+    while (!Obj_IsDeleted(objWindow)) {
+        yield;
+    }
+    yield; // Buffer frame
+    CloseScript(GetOwnScriptID());
 }
