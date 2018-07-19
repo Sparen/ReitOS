@@ -167,8 +167,59 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
     let dragstate = false;
     let dragoffset = [0, 0]; // Last position of mouse (for drag)
     while (status != REITOS_WINDOW_STATUS_CLOSED) {
-        status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
+        // Handle clicks. Header: If Foreground, enable drag. If Background, then set to foreground. Close/Minimize only work if foreground.
+        // Check mouse status
+        let mx = GetCommonData("reitos_mouse_x", 0);
+        let my = GetCommonData("reitos_mouse_y", 0);
 
+        if (Mouse_OnWindow(objWindow)) { // Note that this checks if the mouse is on the WINDOW, not just the header.
+            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PUSH && Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_BACKGROUND) {
+                Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_FOREGROUND);
+                // Notify package that existing foreground window must be moved to background
+                NotifyEventAll(EV_USER_PACKAGE + 12, objWindow);
+            }
+            // Close/Minimize. Naturally, these only work if Foreground. If was background, it has now been set to foreground.
+            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PULL && Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_FOREGROUND &&
+                    mx > (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 24) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 8) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) + 8 && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + 24) {
+                // Close Window
+                Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED); // Tell __LIB_REITOS_WINDOW_Draw to delete the window and components
+                NotifyEventAll(EV_USER_PACKAGE + 11, objWindow); // Unstage the Window
+            }
+            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PULL && Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_FOREGROUND &&
+                    mx > (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 48) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 32) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) + 8 && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + 24) {
+                // Minimize Window
+                Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_MINIMIZED);
+            }
+        }
+
+        // Drag Handling (if foreground and header is being clicked OR currently dragging)
+        // Drag Handling for header must come AFTER checking mouse status, or background windows cannot be immediately dragged.
+        if (Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_FOREGROUND && 
+                (dragstate || (mx > Obj_GetValueD(objWindow, "reitos_window_x", 0) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32)) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + 32))) {
+            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PUSH) {
+                dragstate = true;
+                dragoffset = [mx, my];
+            }
+            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_HOLD) {
+                if (dragstate) {
+                    let lastxoff = mx - dragoffset[0];
+                    let lastyoff = my - dragoffset[1];
+                    // New x and y lock windows to bounds
+                    let newx = max(0, min(800 - Obj_GetValueD(objWindow, "reitos_window_width", 32), Obj_GetValueD(objWindow, "reitos_window_x", 0) + lastxoff));
+                    let newy = max(32, min(600 - Obj_GetValueD(objWindow, "reitos_window_height", 32) - 64, Obj_GetValueD(objWindow, "reitos_window_y", 0) + lastyoff)); // Must consider bounds with top bar, bottom bar, and header, each of which is 32 pixels
+                    Obj_SetValue(objWindow, "reitos_window_x", newx);
+                    Obj_SetValue(objWindow, "reitos_window_y", newy);
+                    dragoffset = [mx, my]; // Update for next frame
+                }
+            }
+            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PULL) {
+                dragstate = false;
+                dragoffset = [0, 0]; // Reset
+            }
+        }
+
+        // Handle drawing. Must occur last.
+        status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
         if (status == REITOS_WINDOW_STATUS_FOREGROUND) {
             Obj_SetVisible(objHeader, true);
             Obj_SetVisible(objText, true);
@@ -206,55 +257,6 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
             Obj_SetVisible(objMinimize, false);
         }
 
-        // Handle clicks. Header: If Foreground, enable drag. If Background, then set to foreground. Close/Minimize only work if foreground.
-        // Check mouse status
-        let mx = GetCommonData("reitos_mouse_x", 0);
-        let my = GetCommonData("reitos_mouse_y", 0);
-        if (Mouse_OnWindow(objWindow)) { // Note that this checks if the mouse is on the WINDOW, not just the header.
-            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PUSH && status == REITOS_WINDOW_STATUS_BACKGROUND) {
-                Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_FOREGROUND);
-                // Notify package that existing foreground window must be moved to background
-                NotifyEventAll(EV_USER_PACKAGE + 12, objWindow);
-            }
-            // Close/Minimize. Naturally, these only work if Foreground. If was background, it has now been set to foreground.
-            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PULL && Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_FOREGROUND &&
-                    mx > (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 24) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 8) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) + 8 && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + 24) {
-                // Close Window
-                Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED); // Tell __LIB_REITOS_WINDOW_Draw to delete the window and components
-                NotifyEventAll(EV_USER_PACKAGE + 11, objWindow); // Unstage the Window
-            }
-            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PULL && Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_FOREGROUND &&
-                    mx > (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 48) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 32) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) + 8 && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + 24) {
-                // Minimize Window
-                Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_MINIMIZED);
-            }
-        }
-
-        // Drag Handling (if foreground and header is being clicked OR currently dragging)
-        if (Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_FOREGROUND && 
-                (dragstate || (mx > Obj_GetValueD(objWindow, "reitos_window_x", 0) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32)) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + 32))) {
-            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PUSH) {
-                dragstate = true;
-                dragoffset = [mx, my];
-            }
-            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_HOLD) {
-                if (dragstate) {
-                    let lastxoff = mx - dragoffset[0];
-                    let lastyoff = my - dragoffset[1];
-                    // New x and y lock windows to bounds
-                    let newx = max(0, min(800 - Obj_GetValueD(objWindow, "reitos_window_width", 32), Obj_GetValueD(objWindow, "reitos_window_x", 0) + lastxoff));
-                    let newy = max(32, min(600 - Obj_GetValueD(objWindow, "reitos_window_height", 32) - 64, Obj_GetValueD(objWindow, "reitos_window_y", 0) + lastyoff)); // Must consider bounds with top bar, bottom bar, and header, each of which is 32 pixels
-                    Obj_SetValue(objWindow, "reitos_window_x", newx);
-                    Obj_SetValue(objWindow, "reitos_window_y", newy);
-                    dragoffset = [mx, my]; // Update for next frame
-                }
-            }
-            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PULL) {
-                dragstate = false;
-                dragoffset = [0, 0]; // Reset
-            }
-        }
-
         yield;
     }
     Obj_Delete(objHeader);
@@ -267,6 +269,18 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
 task __LIB_REITOS_WINDOW_Draw(objWindow) {
     let status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
     while (status != REITOS_WINDOW_STATUS_CLOSED) {
+        // Handle clicks. Body: If Foreground, nothing changes. If Background, then set to foreground. Componenets handled seperately.
+        let mx = GetCommonData("reitos_mouse_x", 0);
+        let my = GetCommonData("reitos_mouse_y", 0);
+        if (Mouse_OnWindow(objWindow)) {
+            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PUSH && Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_BACKGROUND) {
+                Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_FOREGROUND);
+                // Notify package that existing foreground window must be moved to background
+                NotifyEventAll(EV_USER_PACKAGE + 12, objWindow);
+            }
+        }
+
+        // Handle drawing. Must occur last.
         status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
         let components = Obj_GetValueD(objWindow, "reitos_window_components", []);
         if (status == REITOS_WINDOW_STATUS_FOREGROUND) {
@@ -291,17 +305,6 @@ task __LIB_REITOS_WINDOW_Draw(objWindow) {
             Obj_SetVisible(objWindow, false);
             ascent(i in 0..length(components)) {
                 Obj_SetVisible(components[i], false);
-            }
-        }
-
-        // Handle clicks. Body: If Foreground, nothing changes. If Background, then set to foreground. Componenets handled seperately.
-        let mx = GetCommonData("reitos_mouse_x", 0);
-        let my = GetCommonData("reitos_mouse_y", 0);
-        if (Mouse_OnWindow(objWindow)) {
-            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PUSH && status == REITOS_WINDOW_STATUS_BACKGROUND) {
-                Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_FOREGROUND);
-                // Notify package that existing foreground window must be moved to background
-                NotifyEventAll(EV_USER_PACKAGE + 12, objWindow);
             }
         }
 
