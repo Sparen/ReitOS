@@ -31,7 +31,7 @@ As for the events in the package, it has three events (+10, 11, and 12) for stag
 ## Core Library
 The Core Library is the intermediary between libraries, the package, and Applications.
 
-The `Mouse_OnWindow` function determines if mouse is currently on the provided Window object. This means that given the render order of all existing windows, it returns true if the mouse is on the provided Window object AND the part of the Window object in question is visible (i.e. not covered by another Window Object). (COMPLICATED LAYERING PART TO BE IMPLEMENTED LATER)
+The `Mouse_OnWindow` function determines if mouse is currently on the provided Window object. This means that given the render order of all existing windows, it returns true if the mouse is on the provided Window object AND the part of the Window object in question is visible (i.e. not covered by another Window Object).
 
 ## Windowing Library
 The Windowing Library is a key library that creates and handles Window Objects. Window Objects are tied to Applications and have a variety of fields, such as their x and y coordinates (top left of the header), their height and width (height does not include 32 pixel header), their components (things rendered onto the window), and more. 
@@ -42,7 +42,7 @@ Windows are created with their type, height and width, and name. They always spa
 
 Window headers are 32 pixels tall and contain the minimize and close buttons as well as the title.
 
-In regards to interacting with Windows, clicking a Window should bring it to the foreground.
+In regards to interacting with Windows, clicking a Window should bring it to the foreground. Holding a header allows the user to drag it, but not beyond the limits of the screen. Currently, dragging is locked on all four sides of the screen - in the future, if requested, it may be adjusted to only block on the top (similar to macOS).
 
 # Writing an Application for ReitOS
 We will use `applications/reitos-sysinfo` for this section.
