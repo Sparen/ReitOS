@@ -49,7 +49,7 @@ We will use `applications/reitos-sysinfo` for this section.
 
 All Applications are standalone scripts that are allowed to `#include` as many of the libraries in `syslib/lib-*.dnh` as they want to. However, they cannot interact with each other. They are allowed to use EV_USER.
 
-Each Application must have a `PROPERTIES.TXT` file with the following:
+Each Application must have a `PROPERTIES.TXT` file in their main Application directory with the following:
 ```
 APPLICATION_NAME\&lt;Insert your application's name here&gt;
 VERSION_NUMBER\&lt;Insert your application's version number here&gt;
@@ -60,6 +60,13 @@ DRIVER\&lt;Insert path to script here&gt;
 
 This file will eventually be used when displaying a list of all applications but is currently (as of writing) unused.
 
+All Application scripts MUST include the following libraries:
+```java
+// Include libraries from syslib
+#include "./../../syslib/lib_reitos_core.dnh"
+#include "./../../syslib/lib_reitos_window.dnh"
+```
+
 In `@Initialize`, all Application scripts must do the following:
 ```java
 let objWindow = ObjWindow_Create(REITOS_WINDOW_TYPE_REGULAR, 256, 256, "Name");
@@ -67,7 +74,9 @@ NotifyEventAll(EV_USER_PACKAGE + 10, objWindow);
 ...
 TFinalize(objWindow);
 ```
-Of course, the dimensions of the window and the name should be changed. This code will create a Window for the Application. Note that height and width are locked to the available space (UNTESTED?). TFinalize is a task that does the following:
+The dimensions of the window and the name should be changed to whatever you want. This code will create a Window for the Application. All Applications MUST have an associated Window. Note that height and width are locked to the available space (UNTESTED?). 
+
+TFinalize is a task that does the following:
 ```java
 task TFinalize(objWindow) {
     while (!Obj_IsDeleted(objWindow)) {
