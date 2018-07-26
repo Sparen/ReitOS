@@ -21,7 +21,7 @@
 
 @Initialize {
     // Create a new Window and stage it to the bottom bar
-    let objWindow = ObjWindow_Create(REITOS_WINDOW_TYPE_REGULAR, 256, 256, "ReitOS System Information", "./icon.png");
+    let objWindow = ObjWindow_Create(REITOS_WINDOW_TYPE_REGULAR, 256, 256, "ReitOS System Information", GetCurrentScriptDirectory() ~ "icon.png");
     NotifyEventAll(EV_USER_PACKAGE + 10, objWindow);
     // Create components to add to the window
     let objBG = CreateBackground;

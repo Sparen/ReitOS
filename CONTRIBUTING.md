@@ -33,6 +33,8 @@ The Core Library is the intermediary between libraries, the package, and Applica
 
 The `Mouse_OnWindow` function determines if mouse is currently on the provided Window object. This means that given the render order of all existing windows, it returns true if the mouse is on the provided Window object AND the part of the Window object in question is visible (i.e. not covered by another Window Object).
 
+`Mouse_OnDockIcon` is similar but is used internally for dock icons other than the Apps button. Note the three pixel buffer.
+
 ## Windowing Library
 The Windowing Library is a key library that creates and handles Window Objects. Window Objects are tied to Applications and have a variety of fields, such as their x and y coordinates (top left of the header), their height and width (height does not include 32 pixel header), their components (things rendered onto the window), and more. 
 
@@ -69,7 +71,7 @@ All Application scripts MUST include the following libraries:
 
 In `@Initialize`, all Application scripts must do the following:
 ```java
-let objWindow = ObjWindow_Create(REITOS_WINDOW_TYPE_REGULAR, 256, 256, "Name", "icon.png");
+let objWindow = ObjWindow_Create(REITOS_WINDOW_TYPE_REGULAR, 256, 256, "ApplicationName", GetCurrentScriptDirectory() ~ "pathtoicon.png");
 NotifyEventAll(EV_USER_PACKAGE + 10, objWindow);
 ...
 TFinalize(objWindow);

@@ -90,19 +90,30 @@ task __LIB_REITOS_DOCKICON_Text(objDockIcon, objWindow) {
     ObjText_SetHorizontalAlignment(objText, ALIGNMENT_LEFT);
 
     // ICON: Todo
+    let objicon = ObjPrim_Create(OBJ_SPRITE_2D);
+    Obj_SetRenderPriorityI(objicon, 1);
+    ObjPrim_SetTexture(objicon, Obj_GetValueD(objWindow, "reitos_window_icon", ""));
+    ObjSprite2D_SetSourceRect(objicon, 0, 0, 128, 128);
+    ObjSprite2D_SetDestRect(objicon, -12, -12, 12, 12);
+    ObjRender_SetColor(objicon, 255, 255, 255);
+    ObjRender_SetPosition(objicon, Obj_GetValueD(objDockIcon, "reitos_dockicon_x", 0) + 16, 600 - 16, 0);
 
     while (!Obj_IsDeleted(objDockIcon)) {
         ObjRender_SetPosition(objText, Obj_GetValueD(objDockIcon, "reitos_dockicon_x", 0) + 32, 600 - 24, 1); // 32 pixel buffer for icon
+        ObjRender_SetPosition(objicon, Obj_GetValueD(objDockIcon, "reitos_dockicon_x", 0) + 16, 600 - 16, 0);
         // TODO: Autoformat name based on length if width has changed
 
         // Handle drawing. Must occur last.
         let status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
         if (status == REITOS_WINDOW_STATUS_FOREGROUND) {
             ObjRender_SetAlpha(objText, 255);
+            ObjRender_SetColor(objicon, 255, 255, 255);
         } else if (status == REITOS_WINDOW_STATUS_BACKGROUND) {
             ObjRender_SetAlpha(objText, 255);
+            ObjRender_SetColor(objicon, 255, 255, 255);
         } else if (status == REITOS_WINDOW_STATUS_MINIMIZED) {
             ObjRender_SetAlpha(objText, 128);
+            ObjRender_SetColor(objicon, 192, 192, 192);
         }
 
         yield;
