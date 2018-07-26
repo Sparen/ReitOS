@@ -43,6 +43,9 @@ let REITOS_WINDOW_STATUS_BACKGROUND = 2;
 let REITOS_WINDOW_STATUS_MINIMIZED = 3;
 let REITOS_WINDOW_STATUS_CLOSED = 4;
 
+let REITOS_WINDOW_HEADER_SIZE = 24;
+let REITOS_WINDOW_HEADER_TEXTOFFSET = 4; // 5 for header size of 24, 8 for a header size of 32
+
 /* *************************************************************************
 * ObjWindow_Create(type, height, width, name, icon) -- Creates a new Window Object.
 * Return: New Window Object
@@ -62,7 +65,7 @@ function ObjWindow_Create(type, height, width, name, icon) {
     Obj_SetValue(objWindow, "reitos_window_width", min(width, 800));
     // New windows default to center of screen
     Obj_SetValue(objWindow, "reitos_window_x", 400 - width/2);
-    Obj_SetValue(objWindow, "reitos_window_y", 300 - height/2 - 16);
+    Obj_SetValue(objWindow, "reitos_window_y", 300 - height/2 - REITOS_WINDOW_HEADER_SIZE/2);
     // New windows are in the foreground
     Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_FOREGROUND);
     Obj_SetValue(objWindow, "reitos_window_name", name);
@@ -73,9 +76,9 @@ function ObjWindow_Create(type, height, width, name, icon) {
     Obj_SetRenderPriorityI(objWindow, 90);
     ObjPrim_SetTexture(objWindow, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
     ObjSprite2D_SetSourceRect(objWindow, 0, 0, 1, 1);
-    ObjSprite2D_SetDestRect(objWindow, 0, 32, Obj_GetValueD(objWindow, "reitos_window_width", 32), Obj_GetValueD(objWindow, "reitos_window_height", 32) + 32);
+    ObjSprite2D_SetDestRect(objWindow, 0, REITOS_WINDOW_HEADER_SIZE, Obj_GetValueD(objWindow, "reitos_window_width", 32), Obj_GetValueD(objWindow, "reitos_window_height", 32) + REITOS_WINDOW_HEADER_SIZE);
     ObjRender_SetColor(objWindow, 0, 0, 0);
-    ObjRender_SetPosition(objWindow, Obj_GetValueD(objWindow, "reitos_window_x", 0), Obj_GetValueD(objWindow, "reitos_window_y", 0) + 32, 0);
+    ObjRender_SetPosition(objWindow, Obj_GetValueD(objWindow, "reitos_window_x", 0), Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE, 0);
 
     // Force all other windows to background
     NotifyEventAll(EV_USER_PACKAGE + 12, objWindow);
@@ -132,7 +135,7 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
     Obj_SetRenderPriorityI(objHeader, 90); // Window is above all desktop items but below user-controlled area
     ObjPrim_SetTexture(objHeader, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
     ObjSprite2D_SetSourceRect(objHeader, 0, 0, 1, 1);
-    ObjSprite2D_SetDestRect(objHeader, 0, 0, Obj_GetValueD(objWindow, "reitos_window_width", 32), 32);
+    ObjSprite2D_SetDestRect(objHeader, 0, 0, Obj_GetValueD(objWindow, "reitos_window_width", 32), REITOS_WINDOW_HEADER_SIZE);
     ObjRender_SetColor(objHeader, 208, 208, 192);
     ObjRender_SetPosition(objHeader, Obj_GetValueD(objWindow, "reitos_window_x", 0), Obj_GetValueD(objWindow, "reitos_window_y", 0), 0);
 
@@ -147,7 +150,7 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
     ObjText_SetFontColorBottom(objText, 32, 32, 32);
     ObjText_SetFontBorderType(objText, BORDER_NONE);
     ObjText_SetHorizontalAlignment(objText, ALIGNMENT_LEFT);
-    ObjRender_SetPosition(objText, Obj_GetValueD(objWindow, "reitos_window_x", 0) + 32, Obj_GetValueD(objWindow, "reitos_window_y", 0) + 8, 1);
+    ObjRender_SetPosition(objText, Obj_GetValueD(objWindow, "reitos_window_x", 0) + 32, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_TEXTOFFSET, 1);
 
     let objClose = ObjPrim_Create(OBJ_SPRITE_2D);
     Obj_SetRenderPriorityI(objClose, 90);
@@ -155,7 +158,7 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
     ObjSprite2D_SetSourceRect(objClose, 0, 0, 16, 16);
     ObjSprite2D_SetDestCenter(objClose);
     ObjRender_SetColor(objClose, 255, 32, 32);
-    ObjRender_SetPosition(objClose, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 16, Obj_GetValueD(objWindow, "reitos_window_y", 0) + 16, 0);
+    ObjRender_SetPosition(objClose, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 16, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2, 0);
 
     let objMinimize = ObjPrim_Create(OBJ_SPRITE_2D);
     Obj_SetRenderPriorityI(objMinimize, 90);
@@ -163,7 +166,7 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
     ObjSprite2D_SetSourceRect(objMinimize, 0, 0, 16, 16);
     ObjSprite2D_SetDestCenter(objMinimize);
     ObjRender_SetColor(objMinimize, 255, 255, 32);
-    ObjRender_SetPosition(objMinimize, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 40, Obj_GetValueD(objWindow, "reitos_window_y", 0) + 16, 0);
+    ObjRender_SetPosition(objMinimize, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 40, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2, 0);
 
     let status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
     let dragstate = false;
@@ -182,13 +185,13 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
             }
             // Close/Minimize. Naturally, these only work if Foreground. If was background, it has now been set to foreground.
             if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PULL && Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_FOREGROUND &&
-                    mx > (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 24) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 8) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) + 8 && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + 24) {
+                    mx > (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 24) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 8) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2 - 8 && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2 + 8) {
                 // Close Window
                 Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED); // Tell __LIB_REITOS_WINDOW_Draw to delete the window and components
                 NotifyEventAll(EV_USER_PACKAGE + 11, objWindow); // Unstage the Window
             }
             if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PULL && Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_FOREGROUND &&
-                    mx > (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 48) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 32) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) + 8 && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + 24) {
+                    mx > (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 48) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 32) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2 - 8 && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2 + 8) {
                 // Minimize Window
                 Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_MINIMIZED);
             }
@@ -197,7 +200,7 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
         // Drag Handling (if foreground and header is being clicked OR currently dragging)
         // Drag Handling for header must come AFTER checking mouse status, or background windows cannot be immediately dragged.
         if (Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_FOREGROUND && 
-                (dragstate || (mx > Obj_GetValueD(objWindow, "reitos_window_x", 0) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32)) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + 32))) {
+                (dragstate || (mx > Obj_GetValueD(objWindow, "reitos_window_x", 0) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32)) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE))) {
             if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PUSH) {
                 dragstate = true;
                 dragoffset = [mx, my];
@@ -208,7 +211,7 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
                     let lastyoff = my - dragoffset[1];
                     // New x and y lock windows to bounds
                     let newx = max(0, min(800 - Obj_GetValueD(objWindow, "reitos_window_width", 32), Obj_GetValueD(objWindow, "reitos_window_x", 0) + lastxoff));
-                    let newy = max(32, min(600 - Obj_GetValueD(objWindow, "reitos_window_height", 32) - 64, Obj_GetValueD(objWindow, "reitos_window_y", 0) + lastyoff)); // Must consider bounds with top bar, bottom bar, and header, each of which is 32 pixels
+                    let newy = max(32, min(600 - Obj_GetValueD(objWindow, "reitos_window_height", 32) - 32 - REITOS_WINDOW_HEADER_SIZE, Obj_GetValueD(objWindow, "reitos_window_y", 0) + lastyoff)); // Must consider bounds with top bar, bottom bar, and header, each of which is 32 pixels
                     Obj_SetValue(objWindow, "reitos_window_x", newx);
                     Obj_SetValue(objWindow, "reitos_window_y", newy);
                     dragoffset = [mx, my]; // Update for next frame
@@ -228,9 +231,9 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
             Obj_SetVisible(objClose, true);
             Obj_SetVisible(objMinimize, true);
             ObjRender_SetPosition(objHeader, Obj_GetValueD(objWindow, "reitos_window_x", 0), Obj_GetValueD(objWindow, "reitos_window_y", 0), 0);
-            ObjRender_SetPosition(objText, Obj_GetValueD(objWindow, "reitos_window_x", 0) + 8, Obj_GetValueD(objWindow, "reitos_window_y", 0) + 8, 1);
-            ObjRender_SetPosition(objClose, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 16, Obj_GetValueD(objWindow, "reitos_window_y", 0) + 16, 0);
-            ObjRender_SetPosition(objMinimize, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 40, Obj_GetValueD(objWindow, "reitos_window_y", 0) + 16, 0);
+            ObjRender_SetPosition(objText, Obj_GetValueD(objWindow, "reitos_window_x", 0) + 8, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_TEXTOFFSET, 1);
+            ObjRender_SetPosition(objClose, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 16, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2, 0);
+            ObjRender_SetPosition(objMinimize, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 40, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2, 0);
             ObjRender_SetColor(objHeader, 208, 208, 192);
             ObjRender_SetAlpha(objText, 255);
             Obj_SetRenderPriorityI(objHeader, 90);
@@ -243,9 +246,9 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
             Obj_SetVisible(objClose, true);
             Obj_SetVisible(objMinimize, true);
             ObjRender_SetPosition(objHeader, Obj_GetValueD(objWindow, "reitos_window_x", 0), Obj_GetValueD(objWindow, "reitos_window_y", 0), 0);
-            ObjRender_SetPosition(objText, Obj_GetValueD(objWindow, "reitos_window_x", 0) + 8, Obj_GetValueD(objWindow, "reitos_window_y", 0) + 8, 1);
-            ObjRender_SetPosition(objClose, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 16, Obj_GetValueD(objWindow, "reitos_window_y", 0) + 16, 0);
-            ObjRender_SetPosition(objMinimize, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 40, Obj_GetValueD(objWindow, "reitos_window_y", 0) + 16, 0);
+            ObjRender_SetPosition(objText, Obj_GetValueD(objWindow, "reitos_window_x", 0) + 8, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_TEXTOFFSET, 1);
+            ObjRender_SetPosition(objClose, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 16, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2, 0);
+            ObjRender_SetPosition(objMinimize, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 40, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2, 0);
             ObjRender_SetColor(objHeader, 224, 224, 208);
             ObjRender_SetAlpha(objText, 128);
             Obj_SetRenderPriorityI(objHeader, 10);
@@ -291,7 +294,7 @@ task __LIB_REITOS_WINDOW_Draw(objWindow) {
             Obj_SetRenderPriorityI(objWindow, 90);
             ascent(i in 0..length(components)) {
                 Obj_SetVisible(components[i], true);
-                ObjRender_SetPosition(components[i], Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(components[i], "window_position", [0, 0])[0], Obj_GetValueD(objWindow, "reitos_window_y", 0) + Obj_GetValueD(components[i], "window_position", [0, 0])[1] + 32, 0);
+                ObjRender_SetPosition(components[i], Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(components[i], "window_position", [0, 0])[0], Obj_GetValueD(objWindow, "reitos_window_y", 0) + Obj_GetValueD(components[i], "window_position", [0, 0])[1] + REITOS_WINDOW_HEADER_SIZE, 0);
                 Obj_SetRenderPriorityI(components[i], 90 + Obj_GetValueD(components[i], "window_layer", 0));
             }
         } else if (status == REITOS_WINDOW_STATUS_BACKGROUND) {
@@ -300,7 +303,7 @@ task __LIB_REITOS_WINDOW_Draw(objWindow) {
             Obj_SetRenderPriorityI(objWindow, 10);
             ascent(i in 0..length(components)) {
                 Obj_SetVisible(components[i], true);
-                ObjRender_SetPosition(components[i], Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(components[i], "window_position", [0, 0])[0], Obj_GetValueD(objWindow, "reitos_window_y", 0) + Obj_GetValueD(components[i], "window_position", [0, 0])[1] + 32, 0);
+                ObjRender_SetPosition(components[i], Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(components[i], "window_position", [0, 0])[0], Obj_GetValueD(objWindow, "reitos_window_y", 0) + Obj_GetValueD(components[i], "window_position", [0, 0])[1] + REITOS_WINDOW_HEADER_SIZE, 0);
                 Obj_SetRenderPriorityI(components[i], 10 + Obj_GetValueD(components[i], "window_layer", 0));
             }
         } else if (status == REITOS_WINDOW_STATUS_MINIMIZED) {

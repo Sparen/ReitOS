@@ -36,13 +36,13 @@ The `Mouse_OnWindow` function determines if mouse is currently on the provided W
 `Mouse_OnDockIcon` is similar but is used internally for dock icons other than the Apps button. Note the three pixel buffer.
 
 ## Windowing Library
-The Windowing Library is a key library that creates and handles Window Objects. Window Objects are tied to Applications and have a variety of fields, such as their x and y coordinates (top left of the header), their height and width (height does not include 32 pixel header), their components (things rendered onto the window), and more. 
+The Windowing Library is a key library that creates and handles Window Objects. Window Objects are tied to Applications and have a variety of fields, such as their x and y coordinates (top left of the header), their height and width (height does not include the REITOS_WINDOW_HEADER_SIZE pixel header), their components (things rendered onto the window), and more. 
 
 Window Objects use render priorities 10 through 19 and 90 through 99.
 
 Windows are created with their type, height and width, and name. They always spawn in the center of the screen.
 
-Window headers are 32 pixels tall and contain the minimize and close buttons as well as the title.
+Window headers are REITOS_WINDOW_HEADER_SIZE pixels tall and contain the minimize and close buttons as well as the title.
 
 In regards to interacting with Windows, clicking a Window should bring it to the foreground. Holding a header allows the user to drag it, but not beyond the limits of the screen. Currently, dragging is locked on all four sides of the screen - in the future, if requested, it may be adjusted to only block on the top (similar to macOS).
 
