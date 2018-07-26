@@ -69,7 +69,7 @@ All Application scripts MUST include the following libraries:
 
 In `@Initialize`, all Application scripts must do the following:
 ```java
-let objWindow = ObjWindow_Create(REITOS_WINDOW_TYPE_REGULAR, 256, 256, "Name");
+let objWindow = ObjWindow_Create(REITOS_WINDOW_TYPE_REGULAR, 256, 256, "Name", "icon.png");
 NotifyEventAll(EV_USER_PACKAGE + 10, objWindow);
 ...
 TFinalize(objWindow);

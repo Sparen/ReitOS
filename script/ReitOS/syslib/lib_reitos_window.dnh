@@ -32,6 +32,7 @@
 * type (window type; see constants below)
 * status (status of window; see constants below)
 * name (name of window)
+* icon (icon for window)
 * components (objects that are positioned relative to the window)
 ************************************************************************* */
 
@@ -43,10 +44,10 @@ let REITOS_WINDOW_STATUS_MINIMIZED = 3;
 let REITOS_WINDOW_STATUS_CLOSED = 4;
 
 /* *************************************************************************
-* ObjWindow_Create(type, height, width, name) -- Creates a new Window Object.
+* ObjWindow_Create(type, height, width, name, icon) -- Creates a new Window Object.
 * Return: New Window Object
 ************************************************************************* */
-function ObjWindow_Create(type, height, width, name) {
+function ObjWindow_Create(type, height, width, name, icon) {
     // Create a new Window Object using a primitive object as a wrapper
     let objWindow = ObjPrim_Create(OBJ_SPRITE_2D);
     // Set fields
@@ -65,6 +66,7 @@ function ObjWindow_Create(type, height, width, name) {
     // New windows are in the foreground
     Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_FOREGROUND);
     Obj_SetValue(objWindow, "reitos_window_name", name);
+    Obj_SetValue(objWindow, "reitos_window_icon", icon);
     Obj_SetValue(objWindow, "reitos_window_components", []);
 
     // Create window components
