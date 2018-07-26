@@ -12,11 +12,12 @@ This project is still in its infancy. However, it is possible to use the provide
 
 ### Libraries
 All libraries in ReitOS are either sourced from other repositories (marked with the appropriate release tag) or only exist in the ReitOS repository, in which case they will be marked as such.
-* lib_autoformat.dnh - [Danmakufu STL](https://github.com/Sparen/Sparen-DNH-STL) [Release: 2018-r001]  
+* lib_autoformat.dnh - [Danmakufu STL](https://github.com/Sparen/Sparen-DNH-STL) [Release: 2018-r002]  
 * lib_reitos_core.dnh  
 * lib_reitos_window.dnh  
-* stl_queue.dnh - [Danmakufu STL](https://github.com/Sparen/Sparen-DNH-STL) [Release: 2018-r001]  
-* stl_stack.dnh - [Danmakufu STL](https://github.com/Sparen/Sparen-DNH-STL) [Release: 2018-r001]  
+* stl_math.dnh - [Danmakufu STL](https://github.com/Sparen/Sparen-DNH-STL) [Release: 2018-r002] 
+* stl_queue.dnh - [Danmakufu STL](https://github.com/Sparen/Sparen-DNH-STL) [Release: 2018-r002]  
+* stl_stack.dnh - [Danmakufu STL](https://github.com/Sparen/Sparen-DNH-STL) [Release: 2018-r002]  
 
 ### Applications
 * ReitOS System Information (v1.00)
