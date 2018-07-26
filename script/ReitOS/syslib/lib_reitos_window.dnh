@@ -199,8 +199,11 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
 
         // Drag Handling (if foreground and header is being clicked OR currently dragging)
         // Drag Handling for header must come AFTER checking mouse status, or background windows cannot be immediately dragged.
+        // Dragging not allowed if the user selects the area on close or minimize buttons.
         if (Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_FOREGROUND && 
-                (dragstate || (mx > Obj_GetValueD(objWindow, "reitos_window_x", 0) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32)) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE))) {
+                (dragstate || (mx > Obj_GetValueD(objWindow, "reitos_window_x", 0) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32)) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE)) &&
+                !(mx > (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 24) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 8) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2 - 8 && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2 + 8) &&
+                !(mx > (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 48) && mx < (Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 32) && my > Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2 - 8 && my < Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2 + 8)) {
             if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PUSH) {
                 dragstate = true;
                 dragoffset = [mx, my];
