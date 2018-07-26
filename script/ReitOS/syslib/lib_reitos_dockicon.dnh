@@ -9,6 +9,8 @@
 
 /* ******************************************************************
 * This library handles dock icons similarly to __COMP_REITOS_DESKTOP_ApplicationButton
+* Note that ObjDockIcon_Destroy is typically unnecessary, as when the parent window closes,
+* the DockIcon object destroys itself, causing the text and icon to destroy themselves.
 ****************************************************************** */
 
 /* ******************************************************************
@@ -82,18 +84,27 @@ task __LIB_REITOS_DOCKICON_Text(objDockIcon, objWindow) {
     ObjText_SetFontSize(objText, 16);
     ObjText_SetFontBold(objText, false);
     ObjText_SetFontType(objText, "Helvetica");
-    ObjText_SetFontColorTop(objText, 255, 255, 255);
-    ObjText_SetFontColorBottom(objText, 255, 255, 255);
-    ObjText_SetFontBorderType(objText, BORDER_FULL);
-    ObjText_SetFontBorderWidth(objText, 2);
-    ObjText_SetFontBorderColor(objText, 96, 96, 96);
+    ObjText_SetFontColorTop(objText, 32, 32, 32);
+    ObjText_SetFontColorBottom(objText, 32, 32, 32);
+    ObjText_SetFontBorderType(objText, BORDER_NONE);
     ObjText_SetHorizontalAlignment(objText, ALIGNMENT_LEFT);
-    ObjRender_SetPosition(objText, Obj_GetValueD(objWindow, "reitos_dockicon_x", 0) + 32, 600 - 26, 1);
 
     // ICON: Todo
 
     while (!Obj_IsDeleted(objDockIcon)) {
+        ObjRender_SetPosition(objText, Obj_GetValueD(objDockIcon, "reitos_dockicon_x", 0) + 32, 600 - 24, 1); // 32 pixel buffer for icon
         // TODO: Autoformat name based on length if width has changed
+
+        // Handle drawing. Must occur last.
+        let status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
+        if (status == REITOS_WINDOW_STATUS_FOREGROUND) {
+            ObjRender_SetAlpha(objText, 255);
+        } else if (status == REITOS_WINDOW_STATUS_BACKGROUND) {
+            ObjRender_SetAlpha(objText, 255);
+        } else if (status == REITOS_WINDOW_STATUS_MINIMIZED) {
+            ObjRender_SetAlpha(objText, 128);
+        }
+
         yield;
     }
     Obj_Delete(objText);
@@ -103,6 +114,11 @@ task __LIB_REITOS_DOCKICON_Text(objDockIcon, objWindow) {
 task __LIB_REITOS_DOCKICON_Draw(objDockIcon, objWindow) {
     let status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
     while (status != REITOS_WINDOW_STATUS_CLOSED) {
+        // First, update position
+        ObjSprite2D_SetSourceRect(objDockIcon, 0, 0, Obj_GetValueD(objDockIcon, "reitos_dockicon_width", 0) - 6, 32 - 6);
+        ObjSprite2D_SetDestCenter(objDockIcon);
+        ObjRender_SetPosition(objDockIcon, Obj_GetValueD(objDockIcon, "reitos_dockicon_x", 0) + Obj_GetValueD(objDockIcon, "reitos_dockicon_width", 0)/2, 600 - 16, 0);
+
         // Handle clicks.
         let mx = GetCommonData("reitos_mouse_x", 0);
         let my = GetCommonData("reitos_mouse_y", 0);
