@@ -119,6 +119,7 @@ task __LIB_REITOS_DOCKICON_Text(objDockIcon, objWindow) {
         yield;
     }
     Obj_Delete(objText);
+    Obj_Delete(objicon);
 }
 
 // Draws Dock Icon
