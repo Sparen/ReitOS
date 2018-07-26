@@ -1,0 +1,131 @@
+/* ******************************************************************
+* ReitOS Dock Icon Library
+* For use with Touhou Danmakufu ph3
+* (C) Sparen of Iria 2018
+*
+* Code in this library is under the MIT License and may be 
+* redistributed/modified without express permission
+****************************************************************** */
+
+/* ******************************************************************
+* This library handles dock icons similarly to __COMP_REITOS_DESKTOP_ApplicationButton
+****************************************************************** */
+
+/* ******************************************************************
+* Dependencies:
+* lib_reitos_core.dnh
+* lib_reitos_window.dnh
+* lib_autoformat.dnh
+****************************************************************** */
+
+/* ******************************************************************
+* Public Methods:
+* ObjDockIcon_Create()
+* ObjDockIcon_SetPosition()
+* ObjDockIcon_Destroy()
+*
+* Fields:
+* x (refers to left side of icon)
+* width (controls text clipping)
+* window (associated window)
+************************************************************************* */
+
+/* *************************************************************************
+* ObjDockIcon_Create(x, width, window) -- Creates a new DockIcon Object.
+* Return: New DockIcon Object
+************************************************************************* */
+function ObjDockIcon_Create(x, width, window) {
+    // Create a new DockIcon Object using a primitive object as a wrapper
+    let objDockIcon = ObjPrim_Create(OBJ_SPRITE_2D);
+    // Set fields
+    Obj_SetValue(objDockIcon, "reitos_dockicon_x", x);
+    Obj_SetValue(objDockIcon, "reitos_dockicon_width", width);
+    Obj_SetValue(objDockIcon, "reitos_dockicon_window", window);
+
+    // Create dock icon components. Note 3 pixel buffer on all sides
+    Obj_SetRenderPriorityI(objDockIcon, 1);
+    ObjPrim_SetTexture(objDockIcon, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
+    ObjSprite2D_SetSourceRect(objDockIcon, 0, 0, Obj_GetValueD(objDockIcon, "reitos_dockicon_width", 0) - 6, 32 - 6);
+    ObjSprite2D_SetDestCenter(objDockIcon);
+    ObjRender_SetColor(objDockIcon, 0, 0, 0);
+    ObjRender_SetPosition(objDockIcon, Obj_GetValueD(objDockIcon, "reitos_dockicon_x", 0) + Obj_GetValueD(objDockIcon, "reitos_dockicon_width", 0)/2, 600 - 16, 0);
+
+    // Call update tasks on components
+    __LIB_REITOS_DOCKICON_Text(objDockIcon, window);
+    __LIB_REITOS_DOCKICON_Draw(objDockIcon, window);
+
+    return objDockIcon;
+}
+
+/* *************************************************************************
+* ObjDockIcon_SetPosition(objDockIcon, x, width) -- Sets x position and width of window
+************************************************************************* */
+function ObjDockIcon_SetPosition(objDockIcon, x, width) {
+    Obj_SetValue(objDockIcon, "reitos_dockicon_x", x);
+    Obj_SetValue(objDockIcon, "reitos_dockicon_width", width);
+}
+
+/* *************************************************************************
+* ObjDockIcon_Destroy(objDockIcon) -- Destroys the Dock Icon
+* Text and Icons will destroy themselves separately
+************************************************************************* */
+function ObjDockIcon_Destroy(objDockIcon) {
+    Obj_Delete(objDockIcon);
+}
+
+// Draws Text and Icon
+task __LIB_REITOS_DOCKICON_Text(objDockIcon, objWindow) {
+    // Create text object with name
+    let objText = ObjText_Create();
+    Obj_SetRenderPriorityI(objText, 1);
+    ObjText_SetText(objText, Obj_GetValueD(objWindow, "reitos_window_name", "unknown application"));
+    ObjText_SetFontSize(objText, 16);
+    ObjText_SetFontBold(objText, false);
+    ObjText_SetFontType(objText, "Helvetica");
+    ObjText_SetFontColorTop(objText, 255, 255, 255);
+    ObjText_SetFontColorBottom(objText, 255, 255, 255);
+    ObjText_SetFontBorderType(objText, BORDER_FULL);
+    ObjText_SetFontBorderWidth(objText, 2);
+    ObjText_SetFontBorderColor(objText, 96, 96, 96);
+    ObjText_SetHorizontalAlignment(objText, ALIGNMENT_LEFT);
+    ObjRender_SetPosition(objText, Obj_GetValueD(objWindow, "reitos_dockicon_x", 0) + 32, 600 - 26, 1);
+
+    // ICON: Todo
+
+    while (!Obj_IsDeleted(objDockIcon)) {
+        // TODO: Autoformat name based on length if width has changed
+        yield;
+    }
+    Obj_Delete(objText);
+}
+
+// Draws Dock Icon
+task __LIB_REITOS_DOCKICON_Draw(objDockIcon, objWindow) {
+    let status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
+    while (status != REITOS_WINDOW_STATUS_CLOSED) {
+        // Handle clicks.
+        let mx = GetCommonData("reitos_mouse_x", 0);
+        let my = GetCommonData("reitos_mouse_y", 0);
+        if (Mouse_OnDockIcon(objDockIcon)) {
+            // If background or minimized, bring to foreground
+            if (GetCommonData("reitos_mouse_statel", KEY_FREE) == KEY_PUSH && (Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_MINIMIZED || Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED) == REITOS_WINDOW_STATUS_BACKGROUND)) {
+                Obj_SetValue(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_FOREGROUND);
+                // Notify package that existing foreground window must be moved to background
+                NotifyEventAll(EV_USER_PACKAGE + 12, objWindow);
+            }
+        }
+
+        // Handle drawing. Must occur last.
+        status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
+        if (status == REITOS_WINDOW_STATUS_FOREGROUND) {
+            ObjRender_SetColor(objDockIcon, 255, 255, 255);
+        } else if (status == REITOS_WINDOW_STATUS_BACKGROUND) {
+            ObjRender_SetColor(objDockIcon, 255, 255, 255);
+        } else if (status == REITOS_WINDOW_STATUS_MINIMIZED) {
+            ObjRender_SetColor(objDockIcon, 192, 192, 192);
+        }
+
+        yield;
+    }
+    ObjWindow_Destroy(objDockIcon);
+}

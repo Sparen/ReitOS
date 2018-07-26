@@ -19,16 +19,8 @@
 /* ******************************************************************
 * Public Methods:
 * Mouse_OnWindow()
-*
-* Fields:
-* x, y (refer to top left of header)
-* height, width (height does not include 32 pixel header)
-* type (window type; see constants below)
-* status (status of window; see constants below)
-* name (name of window)
-* components (objects that are positioned relative to the window)
+* Mouse_OnDockIcon()
 ************************************************************************* */
-
 
 /* *************************************************************************
 * Mouse_OnWindow(objWindow) -- Determines if the mouse is present on the selected window + header.
@@ -59,5 +51,20 @@ function Mouse_OnWindow(objWindow) {
         }
     }
 
+    return true;
+}
+
+/* *************************************************************************
+* Mouse_OnDockIcon(objDockIcon) -- Determines if the mouse is present on the selected dock icon.
+* Return: true if mouse is on the specified dock icon; false otherwise.
+* NOTE: This method does not require the dock icon library to be included.
+************************************************************************* */
+function Mouse_OnDockIcon(objDockIcon) {
+    let mx = GetCommonData("reitos_mouse_x", 0);
+    let my = GetCommonData("reitos_mouse_y", 0);
+    // First check if the mouse is on the current dock icon. Note 3 pixel buffer 
+    if (mx < Obj_GetValueD(objDockIcon, "reitos_dockicon_x", 0) + 3 || mx > Obj_GetValueD(objDockIcon, "reitos_dockicon_x", 0) + Obj_GetValueD(objDockIcon, "reitos_dockicon_width", 0) - 3 || my < (600 - 29) || my > 597) {
+        return false;
+    }
     return true;
 }
