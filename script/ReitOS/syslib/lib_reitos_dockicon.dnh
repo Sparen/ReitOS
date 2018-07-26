@@ -32,6 +32,12 @@
 * window (associated window)
 ************************************************************************* */
 
+// Minimum width at which text will render. Adjust such that lib_autoformat doesn't go into an infinite loop (IE must fit the ellipsis)
+let REITOS_DOCKICON_LOCKWIDTH = 48; 
+// Min and max sizes for a dock icon.
+let REITOS_DOCKICON_MINICONWIDTH = 32;
+let REITOS_DOCKICON_MAXICONWIDTH = 160;
+
 /* *************************************************************************
 * ObjDockIcon_Create(x, width, window) -- Creates a new DockIcon Object.
 * Return: New DockIcon Object
@@ -77,6 +83,7 @@ function ObjDockIcon_Destroy(objDockIcon) {
 
 // Draws Text and Icon
 task __LIB_REITOS_DOCKICON_Text(objDockIcon, objWindow) {
+    let oldwidth = Obj_GetValueD(objDockIcon, "reitos_dockicon_width", 0);
     // Create text object with name
     let objText = ObjText_Create();
     Obj_SetRenderPriorityI(objText, 1);
@@ -89,7 +96,6 @@ task __LIB_REITOS_DOCKICON_Text(objDockIcon, objWindow) {
     ObjText_SetFontBorderType(objText, BORDER_NONE);
     ObjText_SetHorizontalAlignment(objText, ALIGNMENT_LEFT);
 
-    // ICON: Todo
     let objicon = ObjPrim_Create(OBJ_SPRITE_2D);
     Obj_SetRenderPriorityI(objicon, 1);
     ObjPrim_SetTexture(objicon, Obj_GetValueD(objWindow, "reitos_window_icon", ""));
@@ -101,7 +107,17 @@ task __LIB_REITOS_DOCKICON_Text(objDockIcon, objWindow) {
     while (!Obj_IsDeleted(objDockIcon)) {
         ObjRender_SetPosition(objText, Obj_GetValueD(objDockIcon, "reitos_dockicon_x", 0) + 32, 600 - 24, 1); // 32 pixel buffer for icon
         ObjRender_SetPosition(objicon, Obj_GetValueD(objDockIcon, "reitos_dockicon_x", 0) + 16, 600 - 16, 0);
-        // TODO: Autoformat name based on length if width has changed
+        // Autoformat name based on length if width has changed
+        let currwidth = Obj_GetValueD(objDockIcon, "reitos_dockicon_width", 0);
+        if (currwidth != oldwidth) {
+            oldwidth = currwidth;
+            if (currwidth > REITOS_DOCKICON_LOCKWIDTH) {
+                ObjText_SetText(objText, autoformCharClipA1(Obj_GetValueD(objWindow, "reitos_window_name", "unknown application"), currwidth - 32, "Helvetica", 16, 0, BORDER_NONE, true));
+            } else {
+                // Too small for text
+                ObjText_SetText(objText, "");
+            }
+        }
 
         // Handle drawing. Must occur last.
         let status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
