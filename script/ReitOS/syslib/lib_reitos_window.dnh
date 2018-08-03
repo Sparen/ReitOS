@@ -175,15 +175,13 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
     ObjPrim_SetTexture(objClose, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
     ObjRender_SetPosition(objClose, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 16, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2, 0);
     __LIB_REITOS_WINDOW_SetOctagonVertsA1(objClose);
-    ObjRender_SetColor(objClose, 255, 32, 32);
 
-    let objMinimize = ObjPrim_Create(OBJ_SPRITE_2D);
+    let objMinimize = ObjPrim_Create(OBJ_PRIMITIVE_2D);
+    ObjPrim_SetPrimitiveType(objMinimize, PRIMITIVE_TRIANGLEFAN);
     Obj_SetRenderPriorityI(objMinimize, 90);
     ObjPrim_SetTexture(objMinimize, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
-    ObjSprite2D_SetSourceRect(objMinimize, 0, 0, 16, 16);
-    ObjSprite2D_SetDestCenter(objMinimize);
-    ObjRender_SetColor(objMinimize, 255, 255, 32);
     ObjRender_SetPosition(objMinimize, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 40, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2, 0);
+    __LIB_REITOS_WINDOW_SetOctagonVertsA1(objMinimize);
 
     let status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
     let dragstate = false;
@@ -263,6 +261,7 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
             ObjPrim_SetVertexColor(objHeader, 6, 168, 188, 224);
             ObjPrim_SetVertexColor(objHeader, 7, 168, 188, 224);
             ObjRender_SetColor(objClose, 255, 32, 32);
+            ObjRender_SetColor(objMinimize, 255, 255, 32);
             ObjRender_SetAlpha(objText, 255);
             Obj_SetRenderPriorityI(objHeader, 90);
             Obj_SetRenderPriorityI(objText, 90);
@@ -286,6 +285,7 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
             ObjPrim_SetVertexColor(objHeader, 6, 168-16, 188-16, 224-16);
             ObjPrim_SetVertexColor(objHeader, 7, 168-16, 188-16, 224-16);
             ObjRender_SetColor(objClose, 144, 144, 144);
+            ObjRender_SetColor(objMinimize, 144, 144, 144);
             ObjRender_SetAlpha(objText, 128);
             Obj_SetRenderPriorityI(objHeader, 10);
             Obj_SetRenderPriorityI(objText, 10);
