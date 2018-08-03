@@ -50,10 +50,10 @@ function ObjDockIcon_Create(x, width, window) {
     Obj_SetValue(objDockIcon, "reitos_dockicon_width", width);
     Obj_SetValue(objDockIcon, "reitos_dockicon_window", window);
 
-    // Create dock icon components. Note 3 pixel buffer on all sides
+    // Create dock icon components. Note 3 pixel buffer on top/bottom, 1 pixel buffer of left/right
     Obj_SetRenderPriorityI(objDockIcon, 1);
     ObjPrim_SetTexture(objDockIcon, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
-    ObjSprite2D_SetSourceRect(objDockIcon, 0, 0, Obj_GetValueD(objDockIcon, "reitos_dockicon_width", 0) - 6, 32 - 6);
+    ObjSprite2D_SetSourceRect(objDockIcon, 0, 0, Obj_GetValueD(objDockIcon, "reitos_dockicon_width", 0) - 2, 32 - 6);
     ObjSprite2D_SetDestCenter(objDockIcon);
     ObjRender_SetColor(objDockIcon, 0, 0, 0);
     ObjRender_SetPosition(objDockIcon, Obj_GetValueD(objDockIcon, "reitos_dockicon_x", 0) + Obj_GetValueD(objDockIcon, "reitos_dockicon_width", 0)/2, 600 - 16, 0);
@@ -143,7 +143,7 @@ task __LIB_REITOS_DOCKICON_Draw(objDockIcon, objWindow) {
     let status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
     while (status != REITOS_WINDOW_STATUS_CLOSED) {
         // First, update position
-        ObjSprite2D_SetSourceRect(objDockIcon, 0, 0, Obj_GetValueD(objDockIcon, "reitos_dockicon_width", 0) - 6, 32 - 6);
+        ObjSprite2D_SetSourceRect(objDockIcon, 0, 0, Obj_GetValueD(objDockIcon, "reitos_dockicon_width", 0) - 2, 32 - 6);
         ObjSprite2D_SetDestCenter(objDockIcon);
         ObjRender_SetPosition(objDockIcon, Obj_GetValueD(objDockIcon, "reitos_dockicon_x", 0) + Obj_GetValueD(objDockIcon, "reitos_dockicon_width", 0)/2, 600 - 16, 0);
 

@@ -148,7 +148,7 @@ task __COMP_REITOS_DESKTOP_ApplicationButton {
     Obj_SetRenderPriorityI(objbutton, 1);
     ObjPrim_SetTexture(objbutton, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
     ObjSprite2D_SetSourceRect(objbutton, 0, 0, 1, 1);
-    ObjSprite2D_SetDestRect(objbutton, 3, 600 - 29, 61, 597);
+    ObjSprite2D_SetDestRect(objbutton, 3, 600 - 29, 63, 597);
     ObjRender_SetColor(objbutton, 192, 192, 192);
 
     let objText = ObjText_Create();
