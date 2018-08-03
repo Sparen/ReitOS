@@ -131,13 +131,30 @@ function ObjWindow_Destroy(objWindow) {
 // Draws Header and Header Components
 task __LIB_REITOS_WINDOW_Header(objWindow) {
     // Create the header
-    let objHeader = ObjPrim_Create(OBJ_SPRITE_2D);
+    // Our first vertex is in the center of the window, the next six are the points, the last closes the bottom and is the same as the first.
+    let objHeader = ObjPrim_Create(OBJ_PRIMITIVE_2D);
+    ObjPrim_SetPrimitiveType(objHeader, PRIMITIVE_TRIANGLEFAN);
+    ObjPrim_SetVertexCount(objHeader, 8);
     Obj_SetRenderPriorityI(objHeader, 90); // Window is above all desktop items but below user-controlled area
     ObjPrim_SetTexture(objHeader, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
-    ObjSprite2D_SetSourceRect(objHeader, 0, 0, 1, 1);
-    ObjSprite2D_SetDestRect(objHeader, 0, 0, Obj_GetValueD(objWindow, "reitos_window_width", 32), REITOS_WINDOW_HEADER_SIZE);
-    ObjRender_SetColor(objHeader, 208, 208, 192);
     ObjRender_SetPosition(objHeader, Obj_GetValueD(objWindow, "reitos_window_x", 0), Obj_GetValueD(objWindow, "reitos_window_y", 0), 0);
+    ObjPrim_SetVertexPosition(objHeader, 0, Obj_GetValueD(objWindow, "reitos_window_width", 0) / 2, REITOS_WINDOW_HEADER_SIZE / 2, 0);
+    ObjPrim_SetVertexPosition(objHeader, 1, 0, REITOS_WINDOW_HEADER_SIZE, 0);
+    ObjPrim_SetVertexPosition(objHeader, 2, 0, 4, 0);
+    ObjPrim_SetVertexPosition(objHeader, 3, 4, 0, 0);
+    ObjPrim_SetVertexPosition(objHeader, 4, Obj_GetValueD(objWindow, "reitos_window_width", 0) - 4, 0, 0);
+    ObjPrim_SetVertexPosition(objHeader, 5, Obj_GetValueD(objWindow, "reitos_window_width", 0), 4, 0);
+    ObjPrim_SetVertexPosition(objHeader, 6, Obj_GetValueD(objWindow, "reitos_window_width", 0), REITOS_WINDOW_HEADER_SIZE, 0);
+    ObjPrim_SetVertexPosition(objHeader, 7, 0, REITOS_WINDOW_HEADER_SIZE, 0);
+    ObjPrim_SetVertexUVT(objHeader, 0, 0.5, 0.5);
+    ObjPrim_SetVertexUVT(objHeader, 1, 0, 1);
+    ObjPrim_SetVertexUVT(objHeader, 2, 0, 0);
+    ObjPrim_SetVertexUVT(objHeader, 3, 0, 0);
+    ObjPrim_SetVertexUVT(objHeader, 4, 1, 1);
+    ObjPrim_SetVertexUVT(objHeader, 5, 1, 1);
+    ObjPrim_SetVertexUVT(objHeader, 6, 1, 1);
+    ObjPrim_SetVertexUVT(objHeader, 7, 0, 1);
+    // Header color set in while loop. Change it there.
 
     // Create text object with name, as well as minimize and close buttons
     let objText = ObjText_Create();
@@ -237,7 +254,14 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
             ObjRender_SetPosition(objText, Obj_GetValueD(objWindow, "reitos_window_x", 0) + 8, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_TEXTOFFSET, 1);
             ObjRender_SetPosition(objClose, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 16, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2, 0);
             ObjRender_SetPosition(objMinimize, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 40, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2, 0);
-            ObjRender_SetColor(objHeader, 208, 208, 192);
+            ObjPrim_SetVertexColor(objHeader, 0, 168, 200, 224);
+            ObjPrim_SetVertexColor(objHeader, 1, 168, 188, 224);
+            ObjPrim_SetVertexColor(objHeader, 2, 168, 200, 224);
+            ObjPrim_SetVertexColor(objHeader, 3, 168, 212, 224);
+            ObjPrim_SetVertexColor(objHeader, 4, 168, 212, 224);
+            ObjPrim_SetVertexColor(objHeader, 5, 168, 200, 224);
+            ObjPrim_SetVertexColor(objHeader, 6, 168, 188, 224);
+            ObjPrim_SetVertexColor(objHeader, 7, 168, 188, 224);
             ObjRender_SetAlpha(objText, 255);
             Obj_SetRenderPriorityI(objHeader, 90);
             Obj_SetRenderPriorityI(objText, 90);
@@ -252,7 +276,14 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
             ObjRender_SetPosition(objText, Obj_GetValueD(objWindow, "reitos_window_x", 0) + 8, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_TEXTOFFSET, 1);
             ObjRender_SetPosition(objClose, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 16, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2, 0);
             ObjRender_SetPosition(objMinimize, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 40, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2, 0);
-            ObjRender_SetColor(objHeader, 224, 224, 208);
+            ObjPrim_SetVertexColor(objHeader, 0, 168-16, 200-16, 224-16);
+            ObjPrim_SetVertexColor(objHeader, 1, 168-16, 188-16, 224-16);
+            ObjPrim_SetVertexColor(objHeader, 2, 168-16, 200-16, 224-16);
+            ObjPrim_SetVertexColor(objHeader, 3, 168-16, 212-16, 224-16);
+            ObjPrim_SetVertexColor(objHeader, 4, 168-16, 212-16, 224-16);
+            ObjPrim_SetVertexColor(objHeader, 5, 168-16, 200-16, 224-16);
+            ObjPrim_SetVertexColor(objHeader, 6, 168-16, 188-16, 224-16);
+            ObjPrim_SetVertexColor(objHeader, 7, 168-16, 188-16, 224-16);
             ObjRender_SetAlpha(objText, 128);
             Obj_SetRenderPriorityI(objHeader, 10);
             Obj_SetRenderPriorityI(objText, 10);
