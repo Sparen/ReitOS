@@ -162,11 +162,11 @@ task __LIB_REITOS_DOCKICON_Draw(objDockIcon, objWindow) {
         // Handle drawing. Must occur last.
         status = Obj_GetValueD(objWindow, "reitos_window_status", REITOS_WINDOW_STATUS_CLOSED);
         if (status == REITOS_WINDOW_STATUS_FOREGROUND) {
-            ObjRender_SetColor(objDockIcon, 255, 255, 255);
+            ObjRender_SetColor(objDockIcon, 224, 240, 255);
         } else if (status == REITOS_WINDOW_STATUS_BACKGROUND) {
-            ObjRender_SetColor(objDockIcon, 255, 255, 255);
+            ObjRender_SetColor(objDockIcon, 208, 224, 255);
         } else if (status == REITOS_WINDOW_STATUS_MINIMIZED) {
-            ObjRender_SetColor(objDockIcon, 192, 192, 192);
+            ObjRender_SetColor(objDockIcon, 176, 192, 224);
         }
 
         yield;
