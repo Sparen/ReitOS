@@ -146,14 +146,14 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
     ObjPrim_SetVertexPosition(objHeader, 5, Obj_GetValueD(objWindow, "reitos_window_width", 0), 4, 0);
     ObjPrim_SetVertexPosition(objHeader, 6, Obj_GetValueD(objWindow, "reitos_window_width", 0), REITOS_WINDOW_HEADER_SIZE, 0);
     ObjPrim_SetVertexPosition(objHeader, 7, 0, REITOS_WINDOW_HEADER_SIZE, 0);
-    ObjPrim_SetVertexUVT(objHeader, 0, 0.5, 0.5);
-    ObjPrim_SetVertexUVT(objHeader, 1, 0, 1);
-    ObjPrim_SetVertexUVT(objHeader, 2, 0, 0);
-    ObjPrim_SetVertexUVT(objHeader, 3, 0, 0);
-    ObjPrim_SetVertexUVT(objHeader, 4, 1, 1);
-    ObjPrim_SetVertexUVT(objHeader, 5, 1, 1);
-    ObjPrim_SetVertexUVT(objHeader, 6, 1, 1);
-    ObjPrim_SetVertexUVT(objHeader, 7, 0, 1);
+    ObjPrim_SetVertexUV(objHeader, 0, 0.5, 0.25); // Arbitrary since using dot.jpg
+    ObjPrim_SetVertexUV(objHeader, 1, 0, 1);
+    ObjPrim_SetVertexUV(objHeader, 2, 0, 0);
+    ObjPrim_SetVertexUV(objHeader, 3, 0, 0);
+    ObjPrim_SetVertexUV(objHeader, 4, 1, 1);
+    ObjPrim_SetVertexUV(objHeader, 5, 1, 1);
+    ObjPrim_SetVertexUV(objHeader, 6, 1, 1);
+    ObjPrim_SetVertexUV(objHeader, 7, 0, 1);
     // Header color set in while loop. Change it there.
 
     // Create text object with name, as well as minimize and close buttons
@@ -168,14 +168,14 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
     ObjText_SetFontBorderType(objText, BORDER_NONE);
     ObjText_SetHorizontalAlignment(objText, ALIGNMENT_LEFT);
     ObjRender_SetPosition(objText, Obj_GetValueD(objWindow, "reitos_window_x", 0) + 32, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_TEXTOFFSET, 1);
-
-    let objClose = ObjPrim_Create(OBJ_SPRITE_2D);
-    Obj_SetRenderPriorityI(objClose, 90);
+    
+    let objClose = ObjPrim_Create(OBJ_PRIMITIVE_2D);
+    ObjPrim_SetPrimitiveType(objClose, PRIMITIVE_TRIANGLEFAN);
+    Obj_SetRenderPriorityI(objClose, 90); // Window is above all desktop items but below user-controlled area
     ObjPrim_SetTexture(objClose, GetCurrentScriptDirectory() ~ "../sysimg/dot.jpg");
-    ObjSprite2D_SetSourceRect(objClose, 0, 0, 16, 16);
-    ObjSprite2D_SetDestCenter(objClose);
-    ObjRender_SetColor(objClose, 255, 32, 32);
     ObjRender_SetPosition(objClose, Obj_GetValueD(objWindow, "reitos_window_x", 0) + Obj_GetValueD(objWindow, "reitos_window_width", 32) - 16, Obj_GetValueD(objWindow, "reitos_window_y", 0) + REITOS_WINDOW_HEADER_SIZE/2, 0);
+    __LIB_REITOS_WINDOW_SetOctagonVertsA1(objClose);
+    ObjRender_SetColor(objClose, 255, 32, 32);
 
     let objMinimize = ObjPrim_Create(OBJ_SPRITE_2D);
     Obj_SetRenderPriorityI(objMinimize, 90);
@@ -262,6 +262,7 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
             ObjPrim_SetVertexColor(objHeader, 5, 168, 200, 224);
             ObjPrim_SetVertexColor(objHeader, 6, 168, 188, 224);
             ObjPrim_SetVertexColor(objHeader, 7, 168, 188, 224);
+            ObjRender_SetColor(objClose, 255, 32, 32);
             ObjRender_SetAlpha(objText, 255);
             Obj_SetRenderPriorityI(objHeader, 90);
             Obj_SetRenderPriorityI(objText, 90);
@@ -284,6 +285,7 @@ task __LIB_REITOS_WINDOW_Header(objWindow) {
             ObjPrim_SetVertexColor(objHeader, 5, 168-16, 200-16, 224-16);
             ObjPrim_SetVertexColor(objHeader, 6, 168-16, 188-16, 224-16);
             ObjPrim_SetVertexColor(objHeader, 7, 168-16, 188-16, 224-16);
+            ObjRender_SetColor(objClose, 144, 144, 144);
             ObjRender_SetAlpha(objText, 128);
             Obj_SetRenderPriorityI(objHeader, 10);
             Obj_SetRenderPriorityI(objText, 10);
@@ -350,4 +352,58 @@ task __LIB_REITOS_WINDOW_Draw(objWindow) {
         yield;
     }
     ObjWindow_Destroy(objWindow);
+}
+
+// Sets the vertices of an octogonal trianglefan (used for close/minimize buttons)
+// Mainly used so that the wall of code can be reused between the two buttons.
+// 5th and 6th vertices are one pixel off to correct the pixel errors that arise otherwise.
+function __LIB_REITOS_WINDOW_SetOctagonVertsA1(obj) {
+    ObjPrim_SetVertexCount(obj, 10);
+    ObjPrim_SetVertexPosition(obj, 0, 0, 0, 0);
+    ObjPrim_SetVertexPosition(obj, 1, -8,  4, 0);
+    ObjPrim_SetVertexPosition(obj, 2, -8, -4, 0);
+    ObjPrim_SetVertexPosition(obj, 3, -4, -8, 0);
+    ObjPrim_SetVertexPosition(obj, 4,  4, -8, 0);
+    ObjPrim_SetVertexPosition(obj, 5,  8, -5, 0);
+    ObjPrim_SetVertexPosition(obj, 6,  8,  5, 0);
+    ObjPrim_SetVertexPosition(obj, 7,  4,  8, 0);
+    ObjPrim_SetVertexPosition(obj, 8, -4,  8, 0);
+    ObjPrim_SetVertexPosition(obj, 9, -8,  4, 0);
+    ObjPrim_SetVertexUV(obj, 0, 0.5, 0.5); // Arbitrary since using dot.jpg
+    ObjPrim_SetVertexUV(obj, 1, 0, 1);
+    ObjPrim_SetVertexUV(obj, 2, 0, 0);
+    ObjPrim_SetVertexUV(obj, 3, 0, 0);
+    ObjPrim_SetVertexUV(obj, 4, 1, 0);
+    ObjPrim_SetVertexUV(obj, 5, 1, 0);
+    ObjPrim_SetVertexUV(obj, 6, 1, 1);
+    ObjPrim_SetVertexUV(obj, 7, 1, 1);
+    ObjPrim_SetVertexUV(obj, 8, 0, 1);
+    ObjPrim_SetVertexUV(obj, 9, 0, 1);
+}
+
+// Sets the vertices of an octogonal trianglefan (used for close/minimize buttons)
+// Mainly used so that the wall of code can be reused between the two buttons.
+// 5th and 6th vertices are one pixel off to correct the pixel errors that arise otherwise.
+function __LIB_REITOS_WINDOW_SetOctagonVertsA2(obj) {
+    ObjPrim_SetVertexCount(obj, 10);
+    ObjPrim_SetVertexPosition(obj, 0, 0, 0, 0);
+    ObjPrim_SetVertexPosition(obj, 1, -8,  6, 0);
+    ObjPrim_SetVertexPosition(obj, 2, -8, -6, 0);
+    ObjPrim_SetVertexPosition(obj, 3, -6, -8, 0);
+    ObjPrim_SetVertexPosition(obj, 4,  6, -8, 0);
+    ObjPrim_SetVertexPosition(obj, 5,  8, -7, 0);
+    ObjPrim_SetVertexPosition(obj, 6,  8,  7, 0);
+    ObjPrim_SetVertexPosition(obj, 7,  6,  8, 0);
+    ObjPrim_SetVertexPosition(obj, 8, -6,  8, 0);
+    ObjPrim_SetVertexPosition(obj, 9, -8,  6, 0);
+    ObjPrim_SetVertexUV(obj, 0, 0.5, 0.5); // Arbitrary since using dot.jpg
+    ObjPrim_SetVertexUV(obj, 1, 0, 1);
+    ObjPrim_SetVertexUV(obj, 2, 0, 0);
+    ObjPrim_SetVertexUV(obj, 3, 0, 0);
+    ObjPrim_SetVertexUV(obj, 4, 1, 0);
+    ObjPrim_SetVertexUV(obj, 5, 1, 0);
+    ObjPrim_SetVertexUV(obj, 6, 1, 1);
+    ObjPrim_SetVertexUV(obj, 7, 1, 1);
+    ObjPrim_SetVertexUV(obj, 8, 0, 1);
+    ObjPrim_SetVertexUV(obj, 9, 0, 1);
 }
